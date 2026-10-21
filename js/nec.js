@@ -75,7 +75,7 @@
   const PERFILES = {
     NEC2026: {
       etiqueta: 'NEC 2026 (NFPA 70-2026)', art: '120', refLight: '120.41',
-      lightVA: 22, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4,
+      lightVA: 22, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'opcional', art15Min: 0, metodoViv: 'estandar', art15Min: 1,
       tier1: 8000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -83,7 +83,7 @@
     },
     NEC2020: {
       etiqueta: 'NEC 2020 (NFPA 70-2020, edición en español · Costa Rica)', art: '220', refLight: '220.12',
-      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4,
+      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'estandar', art15Min: 1,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -91,7 +91,7 @@
     },
     NEC2023: {
       etiqueta: 'NEC 2023 (NFPA 70-2023)', art: '220', refLight: '220.12',
-      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4,
+      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'estandar', art15Min: 1,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -99,7 +99,7 @@
     },
     LUAH: {
       etiqueta: 'LUAH · hoja de alimentadores de apartamentos (208 V, 3 fases)', art: '220', refLight: '220.12',
-      lightVA: 20, sacN: 1, sacVA: 3000, lavVA: 1500, gfciVA: 1000, cocinaVA: 0, calentVA: 0, recDwVAm2: 30, extDwVAm2: 5, telecomVA: 1500, detectVA: 1000, hvacDwVAm2: 80, manejPct: 10, divFD: 0.8, appl53Min: 4,
+      lightVA: 20, sacN: 1, sacVA: 3000, lavVA: 1500, gfciVA: 1000, cocinaVA: 0, calentVA: 0, recDwVAm2: 30, extDwVAm2: 5, telecomVA: 1500, detectVA: 1000, hvacDwVAm2: 80, manejPct: 10, divFD: 0.8, appl53Min: 4, metodoViv: 'luah', art15Min: 0,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 208, fases: 3, protFactor: 1.25, minBreaker: 20,
@@ -172,10 +172,11 @@
     const all = A.concat(B);
     const S = c => all.filter(l => l.cat === c).reduce((a, l) => a + l.tot, 0);
     const sum = arr => arr.reduce((a, l) => a + l.tot, 0);
-    const nB = B.reduce((a, l) => a + l.q, 0);
+    const otros = arr => arr.filter(l => l.cat !== 'cocina');
+    const nB = otros(B).reduce((a, l) => a + l.q, 0);
     const f53 = nB >= P.appl53Min ? P.applFD : 1;
     return { lines: A, lines53: B, usa: all.length > 0, coc: S('cocina'), cal: S('calentador'), apar: S('fijo'), esp: S('esp'),
-      tot: sum(all), totA: sum(A), totB: sum(B), nB, f53, aplic53: sum(B) * f53 };
+      tot: sum(all), totA: sum(A), totB: sum(B), otrosA: sum(otros(A)), otrosB: sum(otros(B)), nB, f53, aplic53: sum(otros(B)) * f53 };
   }
 
   /** Conductor (Cu / Al) para un interruptor dado. */
@@ -199,26 +200,41 @@
     const gfci = dflt(r.gfci, P.gfciVA);
     const dv = dispositivos(r, P);
     const esp = dv.usa ? dv.esp : num(r.esp), apar = dv.usa ? dv.apar : num(r.apar);
-    const coc = dv.usa ? dv.coc : dflt(r.coc, P.cocinaVA), cal = dv.usa ? dv.cal : dflt(r.cal, P.calentVA);
+    const cocLista = dv.usa ? dv.coc : dflt(r.coc, P.cocinaVA), calLista = dv.usa ? dv.cal : dflt(r.cal, P.calentVA);
+    // Art. 15 (CFIA, Decreto 36979): cocina eléctrica no menor que 8 000 VA y calentador de agua no menor que 6 000 VA
+    const coc = P.art15Min ? Math.max(cocLista, P.cocinaVA) : cocLista;
+    const calExtra = P.art15Min ? Math.max(0, P.calentVA - calLista) : 0;
+    const cal = calLista;
     const hd = dflt(r.hvacDens, P.hvacDwVAm2), manejPct = dflt(r.manej, P.manejPct);
     const cond = hd > 0 ? area * hd : num(r.hvac), manejVA = hd > 0 ? cond * manejPct / 100 : 0;
     const hvac = cond + manejVA;
     const gLC = light + recDw + ext + sac + lav + gfci + telecom + detect;
-    const gEq = esp + apar + cal;
-    // con lista: lista A al 100 % y lista 220.53 con su factor; sin lista: columnas de la fila al 100 %
-    const general = gLC + (dv.usa ? dv.totA + dv.aplic53 : gEq + coc);
-    const genDem = (Math.min(general, P.tier1) + Math.max(0, general - P.tier1) * P.restFD) * P.genFD;
+    const gEq = esp + apar + cal + calExtra;
+    // aparatos que no son cocina: lista a 100 %, lista 220.53 con su factor (75 % si son 4 o más)
+    const aOtros = (dv.usa ? dv.otrosA : esp + apar + cal) + calExtra;
+    const bOtros = dv.usa ? dv.otrosB : 0;
+    const f53 = dv.nB >= P.appl53Min ? P.applFD : 1;
+    const aplic53 = bOtros * f53;
+    const metodo = P.metodoViv || 'opcional';
+    const general = gLC + coc + aOtros + (metodo === 'opcional' ? bOtros : aplic53);
+    let genDem;
+    if (metodo === 'estandar') {
+      // Parte II: Tabla 220.42 a alumbrado, contactos y lavandería; 220.55 cocina; 220.53 aparatos fijos
+      genDem = (escalonada(gLC, P.tabla42) + demCocina(coc > 0 ? 1 : 0, coc) + aOtros + aplic53) * P.genFD;
+    } else {
+      genDem = (Math.min(general, P.tier1) + Math.max(0, general - P.tier1) * P.restFD) * P.genFD;   // 220.82(B)
+    }
     const hvacDem = hvac * P.hvacFD;
     const dem0 = genDem + hvacDem;
     const divFD = dflt(r.divFD, P.divFD);
     const dem = dem0 * divFD;
     const ci = gLC + gEq + coc + hvac;           // instalada sin factores
-    const totales = general + hvac;              // sub-total (con 220.53 aplicado) + HVAC
+    const totales = general + hvac;              // sub-total + HVAC
     const fUso = totales ? dem0 / totales : 0;
     const iInst = corriente(ci, P), iDem = corriente(dem, P), iProt = iDem * P.protFactor;
     const std = siguiente(iProt, P.breakers);
     const brk = std === null ? null : Math.max(std, P.minBreaker);
-    return { area, light, recDw, ext, telecom, detect, sac, lav, gfci, coc, cal, esp, apar, gLC, gEq, general, genDem, cond, manejVA, hvac, hvacDem, dem0, divFD, totales, fUso, ci, dem, iInst, iDem, iProt, brk, dv, cu: conductor(brk, P) };
+    return { area, light, recDw, ext, telecom, detect, sac, lav, gfci, coc, cocLista, cal, calExtra, esp, apar, gLC, gEq, general, genDem, cond, manejVA, hvac, hvacDem, dem0, divFD, totales, fUso, ci, dem, iInst, iDem, iProt, brk, dv, metodo, aplic53, cu: conductor(brk, P) };
   }
 
   /** Espacio de servicios: área × % aplicado × densidades (VA/m²) + cargas fijas (VA). */
@@ -305,7 +321,7 @@
     if (!n) return 0;
     const kw = n <= 5 ? [8, 11, 14, 17, 20][n - 1] : (n <= 30 ? 15 + n : 25 + 0.75 * n);
     const prom = gCoc / n / 1000;
-    return kw * 1000 * (prom > 12 ? 1 + 0.05 * Math.ceil(prom - 12) : 1);
+    return Math.min(gCoc, kw * 1000 * (prom > 12 ? 1 + 0.05 * Math.ceil(prom - 12) : 1));
   }
   function demLC(gLC, gEq, gCoc, nCoc, P) {
     return P.tablaIncluyeEquipos ? escalonada(gLC + gEq + gCoc, P.tabla42) : escalonada(gLC, P.tabla42) + gEq * P.applFD + demCocina(nCoc, gCoc);

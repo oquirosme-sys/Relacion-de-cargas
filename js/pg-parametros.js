@@ -1,7 +1,7 @@
 /* Página Parámetros NEC: perfil de edición, factores y tablas (todo editable). */
 (function () {
   'use strict';
-  const h = C.h;
+  const h = C.h, fmt = C.fmt;
 
   function render() {
     const root = document.getElementById('view');
@@ -20,6 +20,14 @@
         'Los valores del perfil 2026 provienen de resúmenes secundarios: verifíquelos contra el texto oficial. ',
         'El perfil “Hoja de Excel original” reproduce los factores de la hoja para poder comparar resultados.')));
 
+    const METODOS = [['estandar', 'Estándar NEC 2020 (Parte II): Tablas 220.42, 220.53, 220.55'], ['opcional', 'Opcional 220.82(B): todo al 100 % (sin 220.53)'], ['luah', 'Criterio LUAH: 220.53 al 75 % y luego 220.82(B)']];
+    const selM = h('select', { 'aria-label': 'Método del alimentador de vivienda', onchange: e => { P.metodoViv = e.target.value; Store.save(); } },
+      METODOS.map(m => h('option', { value: m[0], selected: m[0] === P.metodoViv }, m[1])));
+    const chk15 = h('input', { type: 'checkbox', checked: !!P.art15Min, onchange: e => { P.art15Min = e.target.checked ? 1 : 0; Store.save(); } });
+    root.appendChild(h('div', { class: 'card' },
+      h('label', { class: 'inline' }, h('span', null, 'Método del alimentador de cada vivienda'), selM),
+      h('label', { class: 'inline chk' }, chk15, h('span', null, 'Aplicar los mínimos del Art. 15 (CFIA, Decreto 36979-MEIC): cocina eléctrica no menor que ' + fmt(P.cocinaVA, 0) + ' VA y calentador de agua no menor que ' + fmt(P.calentVA, 0) + ' VA'),
+        h('small', { class: 'hint' }, 'También exige 2 circuitos de iluminación y tomacorrientes, 2 circuitos de aparatos pequeños de 1 500 VA, 1 de lavandería de 1 500 VA, 1 de baños (sin carga adicional) y la acometida de telecomunicaciones.'))));
     const grupos = [
       ['Vivienda: cargas generales', [
         ['lightVA', 'Alumbrado general de vivienda', 'VA/m²', P.refLight],

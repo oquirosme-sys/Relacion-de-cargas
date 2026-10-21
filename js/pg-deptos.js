@@ -14,7 +14,7 @@
 
     root.appendChild(h('p', { class: 'hint' },
       'Haga clic en el nombre de una vivienda (DEPTO A1…) para abrir su caja: cargas generales, dispositivos de una lista y resultado del alimentador. Celdas en verde = datos de entrada. Alumbrado ' + P.lightVA + ' VA/m² (' + P.refLight + '), contactos de aparatos pequeños ' + P.sacN + '×' + P.sacVA + ' VA (' + art + '.52(A)), lavandería ' + P.lavVA + ' VA (' + art + '.52(B)), cocina eléctrica ' + P.cocinaVA + ' VA y calentador de agua ' + P.calentVA + ' VA (mínimos del Art. 15 del reglamento de Costa Rica). ' +
-      'Alimentador por vivienda con el método opcional ' + art + '.82(B): primeros ' + fmt(P.tier1, 0) + ' VA al 100 % y el resto al ' + fmt(P.restFD * 100, 0) + ' %, más A/A. ' +
+      (P.metodoViv === 'estandar' ? 'Alimentador por vivienda con el método estándar (Parte II): Tabla ' + art + '.42 a alumbrado, contactos y lavandería, cocina por ' + art + '.55, 75 % a 4 o más aparatos fijos (' + art + '.53) y A/A al 100 %. ' : 'Alimentador por vivienda con el método opcional ' + art + '.82(B): primeros ' + fmt(P.tier1, 0) + ' VA al 100 % y el resto al ' + fmt(P.restFD * 100, 0) + ' %, más A/A. ') +
       'Las celdas vacías usan el valor por defecto de Parámetros NEC.'));
 
     const dl = h('datalist', { id: 'grupos' });
@@ -26,7 +26,7 @@
       ['Lavandería [VA]', art + '.52(B)'], ['Baño GFCI [VA]', '210.11(C)(3)'], ['Equipos especiales [VA]', 'jacuzzi, etc.'], ['Aparatos fijos [VA]', art + '.53'],
       ['Cocina eléctrica [VA]', art + '.55'], ['Calentador de agua [VA]', art + '.53'],
       ['Fuerza HVAC [VA]', ''], ['Incluir', ''],
-      ['Alumbrado [VA]', ''], ['Carga instalada [kVA]', ''], ['Demanda gral. [VA]', 'opcional ' + art + '.82'], ['Demanda total [kVA]', ''],
+      ['Alumbrado [VA]', ''], ['Carga instalada [kVA]', ''], ['Demanda gral. [VA]', P.metodoViv === 'estandar' ? art + '.42 / .53 / .55' : 'opcional ' + art + '.82'], ['Demanda total [kVA]', ''],
       ['I inst. [A]', ''], ['I dem. [A]', ''], ['I prot. [A]', '×' + P.protFactor], ['Interruptor 2P [A]', ''], ''
     ];
     const thead = h('thead', null, h('tr', null, cols.map((c, i) => h('th', { class: i < 13 ? 'in' : (i === 21 ? 'no-print' : 'calc') }, c[0] || '', c[1] ? h('small', null, c[1]) : null))));
