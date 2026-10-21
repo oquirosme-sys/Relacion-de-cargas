@@ -3,16 +3,21 @@
    solo usa Store.state, Store.save(), Store.exportar(), Store.importar() y Store.ejemplo(). */
 (function (g) {
   'use strict';
-  const KEY = 'cargas.proyecto.v2';
+  const KEY = 'cargas.proyecto.v3';
   const uid = () => 's' + Math.random().toString(36).slice(2, 9);
 
-  /** Proyecto en blanco: un sector, una vivienda "Tipo A" (hoja de alimentadores de aptos) y un espacio de servicios por llenar. */
+  /** Proyecto en blanco: un sector, una vivienda "Tipo A" (hoja de alimentadores de aptos) y los espacios de servicios del ejemplo. */
   function ejemplo() {
     const disp = ['refrig', 'cochorno', 'extractor', 'telecomres', 'micro', 'tritur', 'secad', 'cal1', 'cal2', 'lavadora'].map(id => ({ id, qty: 1, kva: null }));
     const tipoA = { id: uid(), grupo: 'Tablero Dep, Tipo 1', nombre: 'A', area: 180, dens: 20, recDw: 30, extDw: 5, sac: 3000, lav: 1500, gfci: 1000,
       telecom: null, detect: null, hvacDens: 80, manej: 20, hvac: 0, coc: null, cal: null, apar: null, esp: null, disp, incl: true };
-    const servicio = { id: uid(), grupo: '', nombre: '', area: 0, pct: 100, tipo: 'pasillos', dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true };
-    const A = { id: uid(), nombre: 'Sector A', modo: 'detalle', deptos: [tipoA], servicios: [servicio], elevadores: [], fdServ: {}, resumen: { depLC: 0, depAC: 0, svLC: 0, svAC: 0, svFDlc: null, svFDac: null } };
+    const sv = (grupo, nombre, area, tipo) => ({ id: uid(), grupo, nombre, area, pct: 100, tipo, dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true });
+    const servicios = [
+      sv('PLANTA BAJA', 'PASILLO DE SERVICIO', 135.48, 'pasillos'), sv('PLANTA BAJA', 'ESCALERAS EMERGENCIA', 13.26, 'escaleras'),
+      sv('PRIMER NIVEL', 'PASILLO DE SERVICIO', 27.16, 'pasillos'), sv('PRIMER NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras'),
+      sv('SEGUNDO NIVEL', 'PASILLO DE SERVICIO', 278.72, 'pasillos'), sv('SEGUNDO NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras')
+    ];
+    const A = { id: uid(), nombre: 'Sector A', modo: 'detalle', deptos: [tipoA], servicios, elevadores: [], fdServ: {}, resumen: { depLC: 0, depAC: 0, svLC: 0, svAC: 0, svFDlc: null, svFDac: null } };
     return {
       version: 1,
       proyecto: { nombre: '', ubicacion: '', fecha: '', responsable: '' },
