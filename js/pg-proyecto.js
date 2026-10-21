@@ -9,7 +9,7 @@
     const S = Store.state, P = S.params, art = P.art;
 
     root.appendChild(h('h2', null, 'Proyecto'));
-    const campo = (l, k, type) => h('label', null, h('span', null, l), C.textInput(S.proyecto, k, { label: l, after: () => { document.getElementById('subtitulo').textContent = S.proyecto.nombre + ' · ' + P.etiqueta; } }));
+    const campo = (l, k, type) => h('label', null, h('span', null, l), C.textInput(S.proyecto, k, { label: l, after: () => { document.getElementById('subtitulo').textContent = (S.proyecto.nombre || 'Proyecto sin nombre') + ' · ' + P.etiqueta; } }));
     root.appendChild(h('div', { class: 'card form' }, campo('Nombre del proyecto', 'nombre'), campo('Ubicación', 'ubicacion'), campo('Fecha', 'fecha'), campo('Elaboró', 'responsable'),
       h('label', null, h('span', null, 'Edición del NEC'), h('div', { class: 'static' }, P.etiqueta, ' ', h('a', { href: 'parametros.html' }, 'cambiar'))) ));
 

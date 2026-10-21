@@ -60,7 +60,7 @@
     head.appendChild(h('div', { class: 'brand' },
       h('span', { class: 'logo', 'aria-hidden': 'true' }, 'kVA'),
       h('div', null, h('h1', null, 'Estimación de cargas eléctricas'),
-        h('small', { id: 'subtitulo' }, S.proyecto.nombre + ' · ' + P.etiqueta))));
+        h('small', { id: 'subtitulo' }, (S.proyecto.nombre || 'Proyecto sin nombre') + ' · ' + P.etiqueta))));
     const inp = h('input', { type: 'file', accept: 'application/json,.json', hidden: true, onchange: e => {
       const f = e.target.files[0]; if (!f) return;
       const rd = new FileReader();
@@ -70,7 +70,7 @@
     head.appendChild(h('div', { class: 'actions no-print' },
       h('button', { class: 'btn small', onclick: () => descargar('cargas-proyecto.json', Store.exportar(), 'application/json') }, 'Exportar proyecto'),
       h('button', { class: 'btn small', onclick: () => inp.click() }, 'Importar'),
-      h('button', { class: 'btn small danger', onclick: () => { if (confirm('Se reemplazará el proyecto actual por el ejemplo (Sector A de la hoja de Excel). ¿Continuar?')) { Store.ejemplo(); location.reload(); } } }, 'Cargar ejemplo'),
+      h('button', { class: 'btn small danger', onclick: () => { if (confirm('Se borrará el proyecto actual y se creará uno en blanco (un sector con una vivienda Tipo A). Exporte antes si quiere conservarlo. ¿Continuar?')) { Store.ejemplo(); location.reload(); } } }, 'Proyecto en blanco'),
       inp));
     const nav = document.getElementById('tabs');
     PAGES.forEach(p => nav.appendChild(h('a', { class: 'tab', href: p[0], 'aria-current': p[0] === id ? 'page' : null }, p[1])));

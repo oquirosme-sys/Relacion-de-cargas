@@ -77,9 +77,11 @@
       box.appendChild(cuadro(NEC.resumenServicios(sec, P), P));
     }
 
-    const tabla = h('table', { class: 'grid' }, thead, tbody, tfoot);
+    const tabla = h('table', { class: 'grid freeze2' }, thead, tbody, tfoot);
     C.fillDown(tabla);
-    root.appendChild(h('div', { class: 'tablewrap' }, tabla));
+    const envol = h('div', { class: 'tablewrap big' }, tabla);
+    root.appendChild(C.scrollSuperior(envol));
+    root.appendChild(envol);
     root.appendChild(dl);
     root.appendChild(h('div', { class: 'toolbar no-print' },
       h('button', { class: 'btn primary', onclick: () => { const l = sec.servicios[sec.servicios.length - 1]; const n = Store.nuevaFilaServicio(l && l.grupo); if (l) n.tipo = l.tipo; sec.servicios.push(n); Store.save(); render(); } }, '+ Agregar espacio'),

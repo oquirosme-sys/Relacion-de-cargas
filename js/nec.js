@@ -33,17 +33,49 @@
     { id: 'almacen', n: 'Almacenamiento', luz: 3, ups: 0, rec: 1, hvac: 0 },
     { id: 'otro', n: 'Otro (valores manuales)', luz: 10, ups: 0, rec: 1, hvac: 0 }
   ];
+  /* Referencia ASHRAE/IES 90.1-2019, Tabla 9.5.2.1-1 (método espacio por espacio), densidad de potencia de alumbrado en W/m²
+     (valores SI del addendum ba: pasillo 4,4; escalera 5,3; eléctrico/mecánico 4,6; cuarto de huéspedes 4,4; estacionamiento interior 1,6;
+     almacén ≥ 13,9 m² 4,1). Es un máximo del código de energía, no una carga de diseño del alimentador. */
+  const ASHRAE_LPD = { pasillos: 4.4, escaleras: 5.3, cuarto_tec: 4.6, bombas: 4.6, hotel: 4.4, estac: 1.6, bodega: 4.1, almacen: 4.1 };
   /* Tabla 220.44 (receptáculos no residenciales): primeros 10 kVA al 100 %, el resto al 50 %. */
   const TABLA_44 = [{ hasta: 10000, fd: 1 }, { hasta: null, fd: 0.5 }];
   /* Tabla 620.14 (elevadores en un mismo alimentador): n.º de elevadores → factor. */
   const TABLA_620 = [[1, 1], [2, 0.95], [3, 0.9], [4, 0.85], [5, 0.82], [6, 0.79], [7, 0.77], [8, 0.75], [9, 0.73], [9999, 0.72]].map(r => ({ hasta: r[0], fd: r[1] }));
 
+  /* Catálogo de dispositivos de vivienda (lista de selección). cat: cocina | calentador | fijo | esp.
+     Valores iniciales tomados de la hoja "918 Calculo alimentadores Aptos". */
+  const CATALOGO = [
+    { id: 'refrig', n: 'Refrig', kva: 1.2, cat: 'fijo' },
+    { id: 'cal1', n: 'Calentador paso 1', kva: 10.8, cat: 'calentador' },
+    { id: 'cal2', n: 'Calentador paso 2', kva: 10.8, cat: 'calentador' },
+    { id: 'tritur', n: 'Triturador', kva: 0.18, cat: 'fijo' },
+    { id: 'secad', n: 'Secadora', kva: 5, cat: 'fijo' },
+    { id: 'lavaplatos', n: 'Lavaplatos', kva: 1.2, cat: 'fijo' },
+    { id: 'micro', n: 'Microondas', kva: 1.1, cat: 'fijo' },
+    { id: 'cocina', n: 'Cocina', kva: 4, cat: 'cocina' },
+    { id: 'horno', n: 'Horno', kva: 4, cat: 'cocina' },
+    { id: 'cochorno', n: 'Cocina/Horno', kva: 8, cat: 'cocina' },
+    { id: 'extractor', n: 'Extractor cocina', kva: 0.5, cat: 'fijo' },
+    { id: 'bombas', n: 'Bombas potable', kva: 1.5, cat: 'fijo' },
+    { id: 'piscina', n: 'Tablero piscina', kva: 10, cat: 'esp' },
+    { id: 'telecomres', n: 'Gabinete residencial telecom', kva: 1, cat: 'fijo' },
+    { id: 'telecompared', n: 'Gabinete pared telecom', kva: 2.8, cat: 'fijo' },
+    { id: 'lavadora', n: 'Lavadora', kva: 1, cat: 'fijo' },
+    { id: 'detector', n: 'Detector de humo', kva: 0.1, cat: 'fijo' },
+    { id: 'calagua', n: 'Calentador de agua eléctrico (Art. 15 CR)', kva: 6, cat: 'calentador' },
+    { id: 'cocelec', n: 'Cocina eléctrica (Art. 15 CR)', kva: 8, cat: 'cocina' }
+  ];
+  /* Conductor por interruptor (hoja de alimentadores de aptos; verificar con la Tabla 310.16). */
+  const CONDUCTORES = [[30, '10', '10'], [40, '8', '6'], [50, '6', '4'], [60, '4', '2'], [70, '4', '2'], [80, '2', '1/0'], [90, '2', '1/0'],
+    [100, '1/0', '1/0'], [125, '1/0', '2/0'], [150, '1/0', '3/0'], [175, '2/0', '4/0'], [200, '3/0', '250'], [225, '4/0', '300'], [250, '250', '350'],
+    [300, '350', '500'], [350, '350', '700'], [400, '600', '900'], [500, '700', '1250'], [600, '900', '900'], [700, '1500', '1250']]
+    .map(r => ({ ocpd: r[0], cu: r[1], al: r[2] }));
 
   /* Perfiles de parámetros. El usuario puede editar cualquier valor después de aplicarlo. */
   const PERFILES = {
     NEC2026: {
       etiqueta: 'NEC 2026 (NFPA 70-2026)', art: '120', refLight: '120.41',
-      lightVA: 22, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000,
+      lightVA: 22, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0,
       tier1: 8000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -51,7 +83,7 @@
     },
     NEC2020: {
       etiqueta: 'NEC 2020 (NFPA 70-2020, edición en español · Costa Rica)', art: '220', refLight: '220.12',
-      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000,
+      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -59,15 +91,23 @@
     },
     NEC2023: {
       etiqueta: 'NEC 2023 (NFPA 70-2023)', art: '220', refLight: '220.12',
-      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000,
+      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
       aplica84: false
     },
+    LUAH: {
+      etiqueta: 'LUAH · hoja de alimentadores de apartamentos (208 V, 3 fases)', art: '220', refLight: '220.12',
+      lightVA: 20, sacN: 1, sacVA: 3000, lavVA: 1500, gfciVA: 1000, cocinaVA: 0, calentVA: 0, recDwVAm2: 30, extDwVAm2: 5, telecomVA: 0, detectVA: 0, hvacDwVAm2: 80, manejPct: 20,
+      tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
+      hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
+      recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 208, fases: 3, protFactor: 1.25, minBreaker: 20,
+      aplica84: false
+    },
     EXCEL: {
       etiqueta: 'Hoja de Excel original (referencia, NEC 2020/2023 con criterios del proyecto)', art: '220', refLight: '220.12',
-      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 1440, cocinaVA: 0, calentVA: 0,
+      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 1440, cocinaVA: 0, calentVA: 0, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0,
       tier1: 10000, restFD: 0.4, genFD: 0.7, hvacFD: 0.7, tablaIncluyeEquipos: true, applFD: 1,
       hvacAggFD: 0.7, hvacProjFD: 0.82, proyServSeparado: false,
       recVAm2: 1, svcFD: 0.8, fdLuz: 0.8, fdRec: 0.8, fdEq: 0.8, fdEsp: 0.8, fdHvac: 0.8, fdElev: 0.8, elevAuto: false, rec44: false, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 220, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -84,7 +124,10 @@
     p.trafos = TRAFOS_3F.slice();
     p.tabla44 = JSON.parse(JSON.stringify(TABLA_44));
     p.tabla620 = JSON.parse(JSON.stringify(TABLA_620));
+    p.catalogo = JSON.parse(JSON.stringify(CATALOGO));
+    p.conductores = JSON.parse(JSON.stringify(CONDUCTORES));
     p.ocupaciones = JSON.parse(JSON.stringify(OCUP_NEC));
+    p.ocupaciones.forEach(o => { o.ash = ASHRAE_LPD[o.id] === undefined ? null : ASHRAE_LPD[o.id]; });
     if (id === 'EXCEL') { p.ocupaciones[0].luz = 6; p.ocupaciones[1].luz = 6; }
     return p;
   }
@@ -113,17 +156,44 @@
 
   function corriente(va, P) { return va / (P.vUnit * (Number(P.fases) === 3 ? Math.sqrt(3) : 1)); }
 
+  /** Dispositivos elegidos de la lista (caja de detalle de la vivienda). Si hay alguno, sustituyen cocina, calentador, aparatos y especiales de la fila. */
+  function dispositivos(r, P) {
+    const cat = P.catalogo || [];
+    const lines = (r.disp || []).map(d => {
+      const it = cat.find(c => c.id === d.id) || { n: '(sin definir)', kva: 0, cat: 'fijo' };
+      const kva = dflt(d.kva, it.kva), q = dflt(d.qty, 1);
+      return { d, it, kva, q, tot: kva * q * 1000, cat: it.cat };
+    });
+    const S = c => lines.filter(l => l.cat === c).reduce((a, l) => a + l.tot, 0);
+    return { lines, usa: lines.length > 0, coc: S('cocina'), cal: S('calentador'), apar: S('fijo'), esp: S('esp'), tot: lines.reduce((a, l) => a + l.tot, 0) };
+  }
+
+  /** Conductor (Cu / Al) para un interruptor dado. */
+  function conductor(brk, P) {
+    if (brk === null || brk === undefined) return null;
+    const l = (P.conductores || []).slice().sort((x, y) => x.ocpd - y.ocpd);
+    let it = null;
+    for (const c of l) if (c.ocpd <= brk) it = c;
+    return it;
+  }
+
   /** Vivienda. Alimentador por método opcional (220.82(B) / 120.82). */
   function calcDepto(r, P) {
     const area = num(r.area);
     const dens = dflt(r.dens, P.lightVA);
     const light = area * dens;
+    const recDw = area * dflt(r.recDw, P.recDwVAm2), ext = area * dflt(r.extDw, P.extDwVAm2);
+    const telecom = dflt(r.telecom, P.telecomVA), detect = dflt(r.detect, P.detectVA);
     const sac = dflt(r.sac, P.sacN * P.sacVA);
     const lav = dflt(r.lav, P.lavVA);
     const gfci = dflt(r.gfci, P.gfciVA);
-    const esp = num(r.esp), apar = num(r.apar), hvac = num(r.hvac);
-    const coc = dflt(r.coc, P.cocinaVA), cal = dflt(r.cal, P.calentVA);
-    const gLC = light + sac + lav + gfci;
+    const dv = dispositivos(r, P);
+    const esp = dv.usa ? dv.esp : num(r.esp), apar = dv.usa ? dv.apar : num(r.apar);
+    const coc = dv.usa ? dv.coc : dflt(r.coc, P.cocinaVA), cal = dv.usa ? dv.cal : dflt(r.cal, P.calentVA);
+    const hd = dflt(r.hvacDens, P.hvacDwVAm2), manejPct = dflt(r.manej, P.manejPct);
+    const cond = hd > 0 ? area * hd : num(r.hvac), manejVA = hd > 0 ? cond * manejPct / 100 : 0;
+    const hvac = cond + manejVA;
+    const gLC = light + recDw + ext + sac + lav + gfci + telecom + detect;
     const gEq = esp + apar + cal;
     const general = gLC + gEq + coc;
     const genDem = (Math.min(general, P.tier1) + Math.max(0, general - P.tier1) * P.restFD) * P.genFD;
@@ -133,7 +203,7 @@
     const iInst = corriente(ci, P), iDem = corriente(dem, P), iProt = iDem * P.protFactor;
     const std = siguiente(iProt, P.breakers);
     const brk = std === null ? null : Math.max(std, P.minBreaker);
-    return { area, light, sac, lav, gfci, coc, cal, gLC, gEq, general, genDem, hvac, hvacDem, ci, dem, iInst, iDem, iProt, brk };
+    return { area, light, recDw, ext, telecom, detect, sac, lav, gfci, coc, cal, esp, apar, gLC, gEq, general, genDem, cond, manejVA, hvac, hvacDem, ci, dem, iInst, iDem, iProt, brk, dv, cu: conductor(brk, P) };
   }
 
   /** Espacio de servicios: área × % aplicado × densidades (VA/m²) + cargas fijas (VA). */
@@ -284,6 +354,6 @@
     return { n, ciKva, fd, cd: fd === null ? null : ciKva * fd };
   }
 
-  g.NEC = { PERFILES, nuevosParams, escalonada, siguiente, calcDepto, calcServicio, calcElevadores, resumenDeptos, resumenServicios,
+  g.NEC = { PERFILES, nuevosParams, escalonada, siguiente, calcDepto, calcServicio, dispositivos, conductor, calcElevadores, resumenDeptos, resumenServicios,
     resumenProyecto, transformador, multifamiliar, TABLA_42, TABLA_84, TABLA_44, TABLA_620, OCUP_NEC, BRK_NEC, BRK_EXCEL, TRAFOS_3F };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -27,6 +27,12 @@
         ['sacVA', 'Carga por circuito de aparatos pequeños', 'VA', art + '.52(A)'],
         ['lavVA', 'Circuito de lavandería', 'VA', art + '.52(B)'],
         ['gfciVA', 'Circuito de baño (0 = sin carga adicional, Art. 15)', 'VA', '210.11(C)(3)'],
+        ['recDwVAm2', 'Tomacorrientes de uso general (0 = incluidos en el alumbrado)', 'VA/m²', art + '.14'],
+        ['extDwVAm2', 'Tomacorrientes exteriores', 'VA/m²', ''],
+        ['telecomVA', 'Circuito gabinete telecom', 'VA', ''],
+        ['detectVA', 'Circuito de detectores', 'VA', ''],
+        ['hvacDwVAm2', 'Condensadoras (0 = captura manual en VA)', 'VA/m²', ''],
+        ['manejPct', 'Manejadoras, % de las condensadoras', '%', ''],
         ['cocinaVA', 'Cocina eléctrica por vivienda (0 = no hay)', 'VA', 'Art. 15 CR: no menos de 8 000 VA · ' + art + '.55'],
         ['calentVA', 'Calentador de agua eléctrico por vivienda', 'VA', 'Art. 15 CR: no menos de 6 000 VA · ' + art + '.53']]],
       ['Vivienda: factores de demanda (alimentador, método opcional)', [
@@ -88,16 +94,47 @@
       lista('Interruptores normalizados [A]', 'breakers', '240.6(A). El perfil Excel usa la lista de la hoja “.” (incluye 1400, 1800 y 3200 A).'),
       lista('Transformadores normalizados [kVA]', 'trafos', 'Trifásicos de uso común; ajuste según el catálogo de la compañía distribuidora.')));
 
+    // Catálogo de dispositivos
+    root.appendChild(h('h3', { class: 'sp' }, 'Catálogo de dispositivos de vivienda (lista de selección)'));
+    const tc = h('tbody');
+    const CATS = [['fijo', 'Aparato fijo (75 % con 4 o más)'], ['cocina', 'Cocina / horno (Tabla ' + art + '.55)'], ['calentador', 'Calentador de agua'], ['esp', 'Equipo especial']];
+    P.catalogo.forEach(it => tc.appendChild(h('tr', null,
+      h('td', { class: 'in' }, C.textInput(it, 'n', { label: 'Dispositivo' })),
+      h('td', { class: 'in' }, C.numInput(it, 'kva', { vacio: 0, step: 'any', label: 'kVA' })),
+      h('td', { class: 'in' }, h('select', { 'aria-label': 'Categoría', onchange: e => { it.cat = e.target.value; Store.save(); } }, CATS.map(c => h('option', { value: c[0], selected: c[0] === it.cat }, c[1])))),
+      h('td', null, h('button', { class: 'btn small danger', title: 'Quitar', onclick: () => { P.catalogo.splice(P.catalogo.indexOf(it), 1); Store.save(); render(); } }, '✕')))));
+    root.appendChild(h('div', { class: 'tablewrap narrow' }, h('table', { class: 'grid' },
+      h('thead', null, h('tr', null, h('th', { class: 'in' }, 'Dispositivo'), h('th', { class: 'in' }, 'kVA'), h('th', { class: 'in' }, 'Categoría'), h('th'))), tc)));
+    root.appendChild(h('div', { class: 'toolbar' }, h('button', { class: 'btn', onclick: () => { P.catalogo.push({ id: 'u' + Store.uid(), n: 'Nuevo dispositivo', kva: 0, cat: 'fijo' }); Store.save(); render(); } }, '+ Agregar dispositivo')));
+    root.appendChild(h('p', { class: 'hint' }, 'Valores iniciales de la hoja “918 Calculo alimentadores Aptos”. La categoría decide cómo se suma el dispositivo en la demanda del sector.'));
+
     // Tipos de espacio
     root.appendChild(h('h3', { class: 'sp' }, 'Tipos de espacio y densidades de carga [VA/m²]'));
     const tb = h('tbody');
-    P.ocupaciones.forEach(o => tb.appendChild(h('tr', null,
-      h('td', { class: 'in' }, C.textInput(o, 'n', { label: 'Tipo de espacio' })),
-      ['luz', 'ups', 'rec', 'hvac'].map(k => h('td', { class: 'in' }, C.numInput(o, k, { vacio: 0, label: k }))))));
+    P.ocupaciones.forEach(o => {
+      const ratio = h('td', { class: 'calc r' });
+      const upd = () => {
+        const asw = Number(o.ash), luz = Number(o.luz);
+        ratio.textContent = asw > 0 ? C.fmt(luz / asw, 1) + ' ×' : '';
+        ratio.title = asw > 0 && luz / asw > 3 ? 'La densidad de diseño supera 3 veces la de ASHRAE: confirme que es intencional.' : '';
+      };
+      upd();
+      tb.appendChild(h('tr', null,
+        h('td', { class: 'in' }, C.textInput(o, 'n', { label: 'Tipo de espacio' })),
+        ['luz', 'ups', 'rec', 'hvac'].map(k => h('td', { class: 'in' }, C.numInput(o, k, { vacio: 0, label: k, after: upd }))),
+        h('td', { class: 'in' }, C.numInput(o, 'ash', { label: 'ASHRAE 90.1 W/m²', after: upd })), ratio));
+    });
     root.appendChild(h('div', { class: 'tablewrap' }, h('table', { class: 'grid' },
-      h('thead', null, h('tr', null, h('th', { class: 'in' }, 'Tipo de espacio'), h('th', { class: 'in' }, 'Alumbrado (' + P.refLight + ')'), h('th', { class: 'in' }, 'Contactos UPS'), h('th', { class: 'in' }, 'Contactos'), h('th', { class: 'in' }, 'HVAC'))), tb)));
+      h('thead', null, h('tr', null, h('th', { class: 'in' }, 'Tipo de espacio'), h('th', { class: 'in' }, 'Alumbrado (' + P.refLight + ')'), h('th', { class: 'in' }, 'Contactos UPS'), h('th', { class: 'in' }, 'Contactos'), h('th', { class: 'in' }, 'HVAC'),
+        h('th', { class: 'in' }, 'ASHRAE 90.1-2019 alumbrado [W/m²]'), h('th', { class: 'calc' }, 'Diseño / ASHRAE'))), tb)));
     root.appendChild(h('div', { class: 'toolbar' }, h('button', { class: 'btn', onclick: () => { P.ocupaciones.push({ id: 'u' + Store.uid(), n: 'Nuevo tipo', luz: 10, ups: 0, rec: 1, hvac: 0 }); Store.save(); render(); } }, '+ Agregar tipo de espacio')));
-    root.appendChild(h('p', { class: 'hint' }, 'Alumbrado según la Tabla 220.12 (NEC 2020/2023). Contactos UPS, contactos y HVAC de los cuartos técnicos y áreas de servicio provienen de las hojas de Excel del proyecto: ajústelos a su criterio.'));
+    root.appendChild(h('div', { class: 'card' }, h('h4', null, 'Revisión frente a ASHRAE'),
+      h('ul', { class: 'notes-list' },
+        h('li', null, 'Alumbrado: la referencia es ASHRAE/IES 90.1-2019, Tabla 9.5.2.1-1 (espacio por espacio), valores SI del addendum ba: pasillo 4,4 · escalera 5,3 · eléctrico/mecánico 4,6 (más 5,6 si el extra se controla aparte) · cuarto de huéspedes 4,4 · estacionamiento interior 1,6 · almacén ≥ 13,9 m² 4,1 · baños 6,8 · lobby 9,0 (hotel 5,4) W/m². El addendum rebaja algunos valores un 4 %.'),
+        h('li', null, 'Esos valores son el máximo de potencia instalada de un código de energía. El NEC (' + P.refLight + ') usa densidades mayores para dimensionar el alimentador, y solo permite usar las del código de energía si hay monitoreo de carga. Por eso la columna “Alumbrado” se mantiene en valores NEC o de proyecto y la de ASHRAE es solo referencia.'),
+        h('li', null, 'Los 15 y 12 VA/m² de cuartos técnicos y áreas de servicio vienen de sus hojas de Excel: duplican o triplican lo de ASHRAE (4,6 W/m²). Son razonables como capacidad de diseño, pero conviene saber que son holgados.'),
+        h('li', null, 'Contactos UPS, contactos y HVAC: ASHRAE no fija valores de código. Como orientación, el manual de usuario de 90.1 cita unos 8 W/m² (0,75 W/ft²) de carga de enchufes en oficinas (fuente secundaria). Las densidades de la herramienta son de capacidad de circuito y por eso son mucho mayores; no se comparan.'))),
+    h('p', { class: 'hint' }, 'Alumbrado según la Tabla 220.12 (NEC 2020/2023). Contactos UPS, contactos y HVAC de los cuartos técnicos y áreas de servicio provienen de las hojas de Excel del proyecto: ajústelos a su criterio.'));
   }
 
   function tablaEscalones(t, titulo, pista, entero) {

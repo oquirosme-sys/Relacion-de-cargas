@@ -44,3 +44,39 @@ td.in { position:relative; }
 .fill-handle { position:absolute; right:-1px; bottom:-1px; width:10px; height:10px; background:var(--brand); border:1px solid var(--surface); cursor:crosshair; z-index:3; touch-action:none; }
 td.fill-sel { outline:2px dashed var(--brand); outline-offset:-2px; }
 @media print { .fill-handle { display:none; } }
+dialog.detalle { width:min(1100px,96vw); max-height:92vh; padding:0; border:1px solid var(--line); border-radius:var(--radius); background:var(--bg); color:var(--ink); }
+dialog.detalle::backdrop { background:rgba(0,0,0,.45); }
+.dform { padding:1rem; display:flex; flex-direction:column; gap:.8rem; max-height:92vh; overflow:auto; }
+.dhead { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; }
+.dgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:1.2rem; align-items:start; }
+.dgrid h4 { margin:.2rem 0 .4rem; } .dgrid table { background:var(--surface); }
+.dfoot { display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; position:sticky; bottom:0; background:var(--bg); padding-top:.4rem; }
+.grid td.in input:disabled { opacity:.6; cursor:not-allowed; }
+@media print { dialog.detalle { display:none; } }
+
+/* Paneles inmovilizados (freeze) y barras de desplazamiento visibles en los cuatro lados de la tabla */
+.tablewrap.big { overflow:scroll; max-height:calc(100vh - 240px); min-height:260px; scrollbar-width:auto; scrollbar-color:var(--muted) var(--line-2); }
+.tablewrap.big::-webkit-scrollbar { width:16px; height:16px; }
+.tablewrap.big::-webkit-scrollbar-track { background:var(--line-2); }
+.tablewrap.big::-webkit-scrollbar-thumb { background:var(--muted); border-radius:8px; border:3px solid var(--line-2); }
+.tablewrap.big::-webkit-scrollbar-corner { background:var(--line-2); }
+table.freeze2 { --f1:150px; --f2:170px; }
+.freeze2 th:nth-child(1), .freeze2 td:nth-child(1) { position:sticky; left:0; width:var(--f1); min-width:var(--f1); max-width:var(--f1); z-index:1; }
+.freeze2 th:nth-child(2), .freeze2 td:nth-child(2) { position:sticky; left:var(--f1); width:var(--f2); min-width:var(--f2); max-width:var(--f2); z-index:1; box-shadow:2px 0 0 var(--line); }
+.freeze2 thead th:nth-child(1), .freeze2 thead th:nth-child(2) { z-index:4; }
+.freeze2 tfoot td:first-child { left:0; z-index:3; box-shadow:2px 0 0 var(--line); }
+.freeze2 td.in input.txt { min-width:0; }
+.freeze2 tr.off td:nth-child(-n+2) { opacity:1; }
+@media print { .tablewrap.big { max-height:none; overflow:visible; } }
+.notes-list { margin:.3rem 0 0; padding-left:1.2rem; font-size:.88rem; color:var(--muted); } .notes-list li { margin:.25rem 0; }
+.grid td.name { background:var(--input); padding:0; }
+.namebtn { appearance:none; width:100%; text-align:left; background:transparent; border:0; color:var(--brand); font:inherit; font-weight:600; padding:.35rem .5rem; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.namebtn:hover { background:var(--brand); color:var(--brand-ink); }
+.namebtn.usa::after { content:''; }
+.grid td.name:focus-within { outline:2px solid var(--brand); outline-offset:-2px; }
+
+.topscroll { position:sticky; z-index:15; overflow-x:scroll; overflow-y:hidden; height:17px; margin-top:.3rem; border:1px solid var(--line); border-bottom:0; border-radius:var(--radius) var(--radius) 0 0; background:var(--line-2); scrollbar-width:auto; scrollbar-color:var(--muted) var(--line-2); }
+.topscroll::-webkit-scrollbar { height:16px; } .topscroll::-webkit-scrollbar-track { background:var(--line-2); }
+.topscroll::-webkit-scrollbar-thumb { background:var(--muted); border-radius:8px; border:3px solid var(--line-2); }
+.topscroll-in { height:1px; }
+.topscroll + .tablewrap.big { border-top-left-radius:0; border-top-right-radius:0; }

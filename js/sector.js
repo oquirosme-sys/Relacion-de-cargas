@@ -73,6 +73,26 @@
     });
   };
 
+  /** Barra de desplazamiento horizontal superior, sincronizada con la inferior de la tabla. Queda fija bajo las pestañas. */
+  C.scrollSuperior = function (wrap) {
+    const inner = h('div', { class: 'topscroll-in' });
+    const bar = h('div', { class: 'topscroll no-print', 'aria-hidden': 'true' }, inner);
+    let lock = false;
+    bar.addEventListener('scroll', () => { if (lock) { lock = false; return; } lock = true; wrap.scrollLeft = bar.scrollLeft; });
+    wrap.addEventListener('scroll', () => { if (lock) { lock = false; return; } lock = true; bar.scrollLeft = wrap.scrollLeft; });
+    const medir = () => {
+      inner.style.width = wrap.scrollWidth + 'px';
+      bar.style.width = wrap.clientWidth + 'px';
+      const nav = document.getElementById('tabs');
+      bar.style.top = (nav ? nav.offsetHeight : 0) + 'px';
+      bar.style.display = wrap.scrollWidth > wrap.clientWidth ? '' : 'none';
+    };
+    if (window.ResizeObserver) { const ro = new ResizeObserver(medir); ro.observe(wrap); if (wrap.firstChild) ro.observe(wrap.firstChild); }
+    window.addEventListener('resize', medir);
+    setTimeout(medir, 0);
+    return bar;
+  };
+
   /** Barra de sector: selector, alta, renombre, baja y modo de captura. */
   C.barraSector = function (rerender) {
     const S = Store.state, sec = Store.sector();

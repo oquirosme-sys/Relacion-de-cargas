@@ -13,7 +13,7 @@
     if (sec.modo === 'resumen') return resumen(root, sec, P);
 
     root.appendChild(h('p', { class: 'hint' },
-      'Celdas en verde = datos de entrada. Alumbrado ' + P.lightVA + ' VA/m² (' + P.refLight + '), contactos de aparatos pequeños ' + P.sacN + '×' + P.sacVA + ' VA (' + art + '.52(A)), lavandería ' + P.lavVA + ' VA (' + art + '.52(B)), cocina eléctrica ' + P.cocinaVA + ' VA y calentador de agua ' + P.calentVA + ' VA (mínimos del Art. 15 del reglamento de Costa Rica). ' +
+      'Haga clic en el nombre de una vivienda (DEPTO A1…) para abrir su caja: cargas generales, dispositivos de una lista y resultado del alimentador. Celdas en verde = datos de entrada. Alumbrado ' + P.lightVA + ' VA/m² (' + P.refLight + '), contactos de aparatos pequeños ' + P.sacN + '×' + P.sacVA + ' VA (' + art + '.52(A)), lavandería ' + P.lavVA + ' VA (' + art + '.52(B)), cocina eléctrica ' + P.cocinaVA + ' VA y calentador de agua ' + P.calentVA + ' VA (mínimos del Art. 15 del reglamento de Costa Rica). ' +
       'Alimentador por vivienda con el método opcional ' + art + '.82(B): primeros ' + fmt(P.tier1, 0) + ' VA al 100 % y el resto al ' + fmt(P.restFD * 100, 0) + ' %, más A/A. ' +
       'Las celdas vacías usan el valor por defecto de Parámetros NEC.'));
 
@@ -36,11 +36,13 @@
 
     function fila(r) {
       const out = {};
-      const num = (k, ph, label) => h('td', { class: 'in' }, C.numInput(r, k, { ph, label, after: refresh }));
+      const ins = {};
+      const num = (k, ph, label) => h('td', { class: 'in' }, (ins[k] = C.numInput(r, k, { ph, label, after: refresh })));
       const cell = k => (out[k] = h('td', { class: 'calc r' }));
       const tr = h('tr', null,
         h('td', { class: 'in' }, C.textInput(r, 'grupo', { list: 'grupos', label: 'Nivel / tipo', after: () => { sync(); refresh(); } })),
-        h('td', { class: 'in' }, C.textInput(r, 'nombre', { label: 'Vivienda' })),
+        h('td', { class: 'name' }, (out.btn = h('button', { class: 'namebtn', title: 'Clic para abrir la caja de cargas y dispositivos de esta vivienda',
+          onclick: () => C.abrirDetalle(r, sec, refresh) }, ''))),
         num('area', '', 'Área'),
         num('dens', fmt(P.lightVA, 0), 'Densidad alumbrado'),
         num('sac', fmt(P.sacN * P.sacVA, 0), 'Contactos aparatos pequeños'),
@@ -56,7 +58,7 @@
         h('td', { class: 'no-print nowrap' },
           h('button', { class: 'btn small', title: 'Duplicar', onclick: () => { const i = sec.deptos.indexOf(r); const c = JSON.parse(JSON.stringify(r)); c.id = Store.uid(); sec.deptos.splice(i + 1, 0, c); Store.save(); render(); } }, '⧉'),
           h('button', { class: 'btn small danger', title: 'Eliminar', onclick: () => { sec.deptos.splice(sec.deptos.indexOf(r), 1); Store.save(); render(); } }, '✕')));
-      refs.push({ r, tr, out });
+      refs.push({ r, tr, out, ins });
       return tr;
     }
     sec.deptos.forEach(r => tbody.appendChild(fila(r)));
@@ -67,6 +69,14 @@
       refs.forEach(x => {
         const c = NEC.calcDepto(x.r, P);
         const o = x.out;
+        o.btn.textContent = (x.r.nombre || '(sin nombre)') + (c.dv.usa ? '  ▸ ' + c.dv.lines.length + ' disp.' : '  ▸');
+        o.btn.classList.toggle('usa', c.dv.usa);
+        ['esp', 'apar', 'coc', 'cal'].forEach(k => {
+          const el = x.ins[k]; el.disabled = c.dv.usa;
+          if (c.dv.usa) el.placeholder = fmt(c[k], 0);
+        });
+        const hd = x.r.hvacDens !== null && x.r.hvacDens !== undefined && x.r.hvacDens !== '' ? x.r.hvacDens : P.hvacDwVAm2;
+        x.ins.hvac.disabled = hd > 0; if (hd > 0) x.ins.hvac.placeholder = fmt(c.hvac, 0);
         o.light.textContent = fmt(c.light, 0);
         o.ci.textContent = fmt(c.ci / 1000, 3);
         o.genDem.textContent = fmt(c.genDem, 0);
@@ -92,9 +102,11 @@
     }
 
     const resumenBox = h('div', { class: 'card' });
-    const tabla = h('table', { class: 'grid' }, thead, tbody, tfoot);
+    const tabla = h('table', { class: 'grid freeze2' }, thead, tbody, tfoot);
     C.fillDown(tabla);
-    root.appendChild(h('div', { class: 'tablewrap' }, tabla));
+    const envol = h('div', { class: 'tablewrap big' }, tabla);
+    root.appendChild(C.scrollSuperior(envol));
+    root.appendChild(envol);
     root.appendChild(dl);
     root.appendChild(h('div', { class: 'toolbar no-print' },
       h('button', { class: 'btn primary', onclick: () => { const last = sec.deptos[sec.deptos.length - 1]; sec.deptos.push(Store.nuevaFilaDepto(last && last.grupo)); Store.save(); render(); } }, '+ Agregar vivienda'),

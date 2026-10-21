@@ -6,39 +6,18 @@
   const KEY = 'cargas.proyecto.v1';
   const uid = () => 's' + Math.random().toString(36).slice(2, 9);
 
-  const HVAC = (4440 / 0.9) + 444; // equipo HVAC por vivienda en la hoja original (VA)
-  const ESP = 7750 / 0.9;          // calentador jacuzzi (VA)
-  function dep(grupo, nombre, area, conEsp) {
-    return { id: uid(), grupo, nombre, area, dens: null, sac: null, lav: null, gfci: null, esp: conEsp ? ESP : 0, apar: 180, hvac: HVAC, incl: true };
-  }
-  function sv(grupo, nombre, area, tipo) {
-    return { id: uid(), grupo, nombre, area, pct: 100, tipo, dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true };
-  }
-
+  /** Proyecto en blanco: un sector, una vivienda "Tipo A" (hoja de alimentadores de aptos) y un espacio de servicios por llenar. */
   function ejemplo() {
-    const deptos = [
-      dep('PLANTA BAJA 2BD-3U', 'DEPTO A1', 243, true), dep('PLANTA BAJA 2BD-3U', 'DEPTO A2', 236, true), dep('PLANTA BAJA 2BD-3U', 'DEPTO A3', 240, true),
-      dep('PRIMER NIVEL 2BD-3U', 'DEPTO A1', 255), dep('PRIMER NIVEL 2BD-3U', 'DEPTO A2', 250), dep('PRIMER NIVEL 2BD-3U', 'DEPTO A3', 258),
-      dep('SEGUNDO NIVEL 2BD-3U', 'DEPTO A1', 255), dep('SEGUNDO NIVEL 2BD-3U', 'DEPTO A2', 250), dep('SEGUNDO NIVEL 2BD-3U', 'DEPTO A3', 258),
-      dep('PLANTA BAJA 3BD-B', '121A', 395, true), dep('PLANTA BAJA 3BD-B', '121B', 367, true),
-      dep('PRIMER NIVEL 3BD-B', '131A', 410), dep('PRIMER NIVEL 3BD-B', '131B', 390),
-      dep('SEGUNDO NIVEL 3BD-B', '141A', 410), dep('SEGUNDO NIVEL 3BD-B', '141B', 360),
-      dep('AZOTEA 3BD-B', 'TERRAZA A', 90), dep('AZOTEA 3BD-B', 'TERRAZA B', 90)
-    ];
-    const servicios = [
-      sv('PLANTA BAJA', 'PASILLO DE SERVICIO', 135.48, 'pasillos'), sv('PLANTA BAJA', 'ESCALERAS EMERGENCIA', 13.26, 'escaleras'),
-      sv('PRIMER NIVEL', 'PASILLO DE SERVICIO', 27.16, 'pasillos'), sv('PRIMER NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras'),
-      sv('SEGUNDO NIVEL', 'PASILLO DE SERVICIO', 278.72, 'pasillos'), sv('SEGUNDO NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras')
-    ];
-    const A = { id: uid(), nombre: 'Sector A', modo: 'detalle', deptos, servicios, elevadores: [], fdServ: {}, resumen: { depLC: 0, depAC: 0, svLC: 0, svAC: 0, svFDlc: null, svFDac: null } };
-    // Sectores B y C: la hoja "Relación Completa" solo trae totales (vínculos a otros libros), por eso van en modo resumen.
-    const B = { id: uid(), nombre: 'Sector B', modo: 'resumen', deptos: [], servicios: [], elevadores: [], fdServ: {}, resumen: { depLC: 234.45012, depAC: 49.953333, svLC: 3.53654, svAC: 12.40404, svFDlc: null, svFDac: 0.9 } };
-    const C = { id: uid(), nombre: 'Sector C', modo: 'resumen', deptos: [], servicios: [], elevadores: [], fdServ: {}, resumen: { depLC: 247.323, depAC: 63.353333, svLC: 3.53654, svAC: 12.40404, svFDlc: null, svFDac: 1 } };
+    const disp = ['refrig', 'cochorno', 'extractor', 'telecomres', 'micro', 'tritur', 'secad', 'cal1', 'cal2', 'lavadora'].map(id => ({ id, qty: 1, kva: null }));
+    const tipoA = { id: uid(), grupo: 'Tablero Dep, Tipo 1', nombre: 'A', area: 180, dens: 20, recDw: 30, extDw: 5, sac: 3000, lav: 1500, gfci: 1000,
+      telecom: null, detect: null, hvacDens: 80, manej: 20, hvac: 0, coc: null, cal: null, apar: null, esp: null, disp, incl: true };
+    const servicio = { id: uid(), grupo: '', nombre: '', area: 0, pct: 100, tipo: 'pasillos', dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true };
+    const A = { id: uid(), nombre: 'Sector A', modo: 'detalle', deptos: [tipoA], servicios: [servicio], elevadores: [], fdServ: {}, resumen: { depLC: 0, depAC: 0, svLC: 0, svAC: 0, svFDlc: null, svFDac: null } };
     return {
       version: 1,
-      proyecto: { nombre: 'Peninsula Residences Costa Palmas', ubicacion: '', fecha: new Date().toISOString().slice(0, 10), responsable: '' },
+      proyecto: { nombre: '', ubicacion: '', fecha: '', responsable: '' },
       params: NEC.nuevosParams('NEC2020'),
-      sectores: [A, B, C],
+      sectores: [A],
       activo: A.id
     };
   }
@@ -62,6 +41,9 @@
         P.ocupaciones = base.ocupaciones;
         P.ocupaciones.forEach(o => { if (old[o.id] !== undefined) o.luz = old[o.id]; });
       }
+      P.ocupaciones.forEach(o => {
+        if (o.ash === undefined) { const b = base.ocupaciones.find(x => x.id === o.id); o.ash = b ? b.ash : null; }
+      });
       S.sectores.forEach(sec => {
         sec.elevadores = sec.elevadores || [];
         sec.fdServ = sec.fdServ || {};
