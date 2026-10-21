@@ -39,7 +39,9 @@
         ['tier1', 'Primer escalón al 100 %', 'VA', art + '.82(B)'],
         ['restFD', 'Factor del resto', '', art + '.82(B)'],
         ['genFD', 'Factor adicional carga general', '', 'criterio de proyecto (NEC = 1)'],
-        ['hvacFD', 'Factor HVAC por vivienda', '', art + '.82(C) / ' + art + '.60 (NEC = 1)']]],
+        ['hvacFD', 'Factor HVAC por vivienda', '', art + '.82(C) / ' + art + '.60 (NEC = 1)'],
+        ['divFD', 'Factor de diversidad del alimentador de vivienda', '', 'criterio de proyecto (1 = sin reducción)'],
+        ['appl53Min', 'N.º mínimo de aparatos fijos para aplicar ' + art + '.53', 'n.º', art + '.53 (4 o más)']]],
       ['Sector y proyecto (transformador)', [
         ['applFD', 'Aparatos fijos y equipos especiales', '', art + '.53 (75 % con 4 o más)'],
         ['hvacAggFD', 'Factor HVAC de sector', '', art + '.60'],

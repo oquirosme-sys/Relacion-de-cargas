@@ -69,7 +69,7 @@
       refs.forEach(x => {
         const c = NEC.calcDepto(x.r, P);
         const o = x.out;
-        o.btn.textContent = (x.r.nombre || '(sin nombre)') + (c.dv.usa ? '  ▸ ' + c.dv.lines.length + ' disp.' : '  ▸');
+        o.btn.textContent = (x.r.nombre || '(sin nombre)') + (c.dv.usa ? '  ▸ ' + (c.dv.lines.length + c.dv.lines53.length) + ' disp.' : '  ▸');
         o.btn.classList.toggle('usa', c.dv.usa);
         ['esp', 'apar', 'coc', 'cal'].forEach(k => {
           const el = x.ins[k]; el.disabled = c.dv.usa;

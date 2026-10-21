@@ -3,14 +3,16 @@
    solo usa Store.state, Store.save(), Store.exportar(), Store.importar() y Store.ejemplo(). */
 (function (g) {
   'use strict';
-  const KEY = 'cargas.proyecto.v3';
+  const KEY = 'cargas.proyecto.v4';
   const uid = () => 's' + Math.random().toString(36).slice(2, 9);
 
-  /** Proyecto en blanco: un sector, una vivienda "Tipo A" (hoja de alimentadores de aptos) y los espacios de servicios del ejemplo. */
+  /** Proyecto en blanco: un sector, una vivienda "Tablero TP" (hoja de alimentadores de aptos) y los espacios de servicios del ejemplo. */
   function ejemplo() {
-    const disp = ['refrig', 'cochorno', 'extractor', 'telecomres', 'micro', 'tritur', 'secad', 'cal1', 'cal2', 'lavadora'].map(id => ({ id, qty: 1, kva: null }));
-    const tipoA = { id: uid(), grupo: 'Tablero Dep, Tipo 1', nombre: 'A', area: 180, dens: 20, recDw: 30, extDw: 5, sac: 3000, lav: 1500, gfci: 1000,
-      telecom: null, detect: null, hvacDens: 80, manej: 20, hvac: 0, coc: null, cal: null, apar: null, esp: null, disp, incl: true };
+    const L = ids => ids.map(id => ({ id, qty: 1, kva: null }));
+    const disp = L(['refrig', 'tritur', 'lavaplatos', 'micro', 'cocina', 'secad']);
+    const disp53 = [1, 2, 3, 4, 5, 6, 7].map(() => ({ id: 'cal1', qty: 1, kva: null }));
+    const tipoA = { id: uid(), grupo: 'Tablero TP', nombre: '1', area: 629, dens: 20, recDw: 30, extDw: 5, sac: 3000, lav: 1500, gfci: 1000,
+      telecom: 1500, detect: 1000, hvacDens: 80, manej: 10, hvac: 0, coc: null, cal: null, apar: null, esp: null, divFD: 0.8, disp, disp53, incl: true };
     const sv = (grupo, nombre, area, tipo) => ({ id: uid(), grupo, nombre, area, pct: 100, tipo, dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true });
     const servicios = [
       sv('PLANTA BAJA', 'PASILLO DE SERVICIO', 135.48, 'pasillos'), sv('PLANTA BAJA', 'ESCALERAS EMERGENCIA', 13.26, 'escaleras'),
