@@ -19,9 +19,9 @@
     const th = a => h('tr', null, a.map(x => h('th', { class: 'calc' }, x)));
     const rows = [];
     R.rows.forEach(r => {
-      const sn = r.sec.nombre + (r.sec.modo === 'resumen' ? ' (resumen)' : '');
-      rows.push(h('tr', null, h('td', null, sn + ' · Viviendas'), nums(r.dep.ciLC, r.dep.ciAC, r.dep.ci, r.dep.cdLC, r.dep.cdAC, r.dep.cd, r.depTr)));
-      rows.push(h('tr', null, h('td', null, sn + ' · Servicios'), nums(r.sv.ciLC, r.sv.ciAC, r.sv.ci, r.sv.cdLC, r.sv.cdAC, r.sv.cd, r.svTr)));
+      const sn = R.rows.length > 1 ? r.sec.nombre + (r.sec.modo === 'resumen' ? ' (resumen)' : '') : '';
+      rows.push(h('tr', null, h('td', null, sn ? sn + ' · Viviendas' : 'Viviendas'), nums(r.dep.ciLC, r.dep.ciAC, r.dep.ci, r.dep.cdLC, r.dep.cdAC, r.dep.cd, r.depTr)));
+      rows.push(h('tr', null, h('td', null, sn ? sn + ' · Servicios' : 'Servicios'), nums(r.sv.ciLC, r.sv.ciAC, r.sv.ci, r.sv.cdLC, r.sv.cdAC, r.sv.cd, r.svTr)));
     });
     rows.push(h('tr', { class: 'tot' }, h('td', null, 'SUMA DE SECTORES'),
       nums(sum(R, 'ciLC'), sum(R, 'ciAC'), sum(R, 'ci'), sum(R, 'cdLC'), sum(R, 'cdAC'), sum(R, 'cd'), null)));

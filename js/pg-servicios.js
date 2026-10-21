@@ -11,7 +11,7 @@
     elevTot = null;
     const P = Store.state.params, sec = Store.sector(), art = P.art;
     root.appendChild(C.barraSector(render));
-    root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · servicios · ' + sec.nombre));
+    root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · servicios'));
 
     if (sec.modo === 'resumen') return resumen(root, sec, P);
 
@@ -99,7 +99,7 @@
     root.appendChild(h('h3', { class: 'sp' }, 'Elevadores · Tabla 620.14'));
     root.appendChild(elevadores(sec, P, refresh));
 
-    root.appendChild(h('h3', { class: 'sp' }, 'Cuadro de cargas del ' + sec.nombre + ' (servicios)'));
+    root.appendChild(h('h3', { class: 'sp' }, 'Cuadro de cargas (servicios)'));
     root.appendChild(box);
     refresh();
   }

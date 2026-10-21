@@ -8,7 +8,7 @@
     root.textContent = '';
     const P = Store.state.params, sec = Store.sector(), art = P.art;
     root.appendChild(C.barraSector(render));
-    root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · viviendas · ' + sec.nombre));
+    root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · viviendas'));
 
     if (sec.modo === 'resumen') return resumen(root, sec, P);
 
@@ -111,7 +111,7 @@
     root.appendChild(h('div', { class: 'toolbar no-print' },
       h('button', { class: 'btn primary', onclick: () => { const last = sec.deptos[sec.deptos.length - 1]; sec.deptos.push(Store.nuevaFilaDepto(last && last.grupo)); Store.save(); render(); } }, '+ Agregar vivienda'),
       h('span', { class: 'hint' }, 'Para copiar un valor hacia abajo como en Excel: arrastre el cuadrito de la esquina de la celda activa (doble clic = hasta el final) o use Ctrl+D.')));
-    root.appendChild(h('h3', { class: 'sp' }, 'Resumen de relación de cargas del ' + sec.nombre + ' (viviendas)'));
+    root.appendChild(h('h3', { class: 'sp' }, 'Resumen de relación de cargas (viviendas)'));
     root.appendChild(resumenBox);
     root.appendChild(notas(P, art));
     refresh();

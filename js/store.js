@@ -3,7 +3,7 @@
    solo usa Store.state, Store.save(), Store.exportar(), Store.importar() y Store.ejemplo(). */
 (function (g) {
   'use strict';
-  const KEY = 'cargas.proyecto.v1';
+  const KEY = 'cargas.proyecto.v2';
   const uid = () => 's' + Math.random().toString(36).slice(2, 9);
 
   /** Proyecto en blanco: un sector, una vivienda "Tipo A" (hoja de alimentadores de aptos) y un espacio de servicios por llenar. */
