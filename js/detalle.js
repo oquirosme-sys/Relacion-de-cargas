@@ -94,9 +94,9 @@
             h('table', { class: 'grid' }, h('tbody', null,
               h('tr', null, h('td', null, 'F. diversidad (vacío = por defecto)'), h('td', { class: 'in' }, C.numInput(r, 'divFD', { ph: fmt(P.divFD, 2), step: '0.05', label: 'Factor de diversidad', after: upd })), out(c => fmt(c.divFD, 2)))))),
           h('div', null,
-            lista('disp', 'Otros dispositivos (se suman al 100 %)', 'La categoría del catálogo decide el factor: tomas (refrigeradora, microondas) entran en la Tabla 220.42; cocina por 220.55; secadora por 220.54.'),
+            lista('disp', 'Otros dispositivos' + (P.metodoViv === 'estandar' ? ' (el factor depende de su categoría)' : ' (se suman al 100 %)'), 'La categoría del catálogo decide el factor: tomas (refrigeradora, microondas) entran en la Tabla 220.42; cocina por 220.55; secadora por 220.54.'),
             h('div', { class: 'sp' }),
-            lista('disp53', 'Dispositivos con factor ' + art + '.53 (aparatos fijos)', P.appl53Min + ' o más aparatos fijos (de ambas listas): se aplica ' + fmt(P.applFD * 100, 0) + ' %. No incluya cocinas, secadoras ni A/A.'),
+            lista('disp53', P.metodoViv === 'opcional' ? 'Segunda lista de aparatos (al 100 % en el método opcional)' : 'Dispositivos con factor ' + art + '.53 (aparatos fijos)', P.appl53Min + ' o más aparatos fijos (de ambas listas): se aplica ' + fmt(P.applFD * 100, 0) + ' %. No incluya cocinas, secadoras ni A/A.'),
             h('p', { class: 'hint' }, dv0.usa ? 'Con dispositivos en alguna lista, la cocina, el calentador, los aparatos fijos y los especiales de esta vivienda se toman de las listas (no de las columnas de la tabla).'
               : 'Sin dispositivos: se usan las columnas de la tabla (cocina ' + fmt(P.cocinaVA, 0) + ' VA y calentador ' + fmt(P.calentVA, 0) + ' VA por defecto).'),
             h('h4', { class: 'sp' }, 'Resultado'),
