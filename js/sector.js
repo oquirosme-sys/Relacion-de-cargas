@@ -98,11 +98,11 @@
     const S = Store.state, sec = Store.sector();
     const sel = C.selectorSector(rerender);
     return h('div', { class: 'toolbar no-print' },
-      h('label', { class: 'inline' }, h('span', null, 'Sector'), sel),
-      h('button', { class: 'btn small', onclick: () => { const n = prompt('Nombre del nuevo sector:', 'Sector ' + String.fromCharCode(65 + S.sectores.length)); if (n && n.trim()) { Store.nuevoSector(n.trim()); rerender(); } } }, '+ Sector'),
+      h('label', { class: 'inline' }, h('span', null, 'Nivel / sector'), sel),
+      h('button', { class: 'btn small', onclick: () => { const n = prompt('Nombre del nuevo nivel / sector:', 'Nivel ' + (S.sectores.length + 1)); if (n && n.trim()) { Store.nuevoSector(n.trim()); rerender(); } } }, '+ Nivel / sector'),
       h('button', { class: 'btn small', onclick: () => { const n = prompt('Nuevo nombre:', sec.nombre); if (n && n.trim()) { sec.nombre = n.trim(); Store.save(); rerender(); } } }, 'Renombrar'),
       h('button', { class: 'btn small danger', disabled: S.sectores.length < 2, onclick: () => {
-        if (!confirm('¿Eliminar el sector "' + sec.nombre + '" con todos sus datos?')) return;
+        if (!confirm('¿Eliminar "' + sec.nombre + '" con todos sus datos?')) return;
         S.sectores = S.sectores.filter(x => x !== sec); S.activo = S.sectores[0].id; Store.save(); rerender();
       } }, 'Eliminar'),
       h('span', { class: 'grow' }),

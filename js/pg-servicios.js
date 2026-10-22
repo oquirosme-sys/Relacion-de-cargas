@@ -12,6 +12,7 @@
     const P = Store.state.params, sec = Store.sector(), art = P.art;
     root.appendChild(C.barraSector(render));
     root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · servicios'));
+    root.appendChild(h('p', { class: 'hint' }, 'Sistema del proyecto: ' + P.vUnit + ' V · ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico') + ' (se cambia en la página Proyecto).'));
 
     if (sec.modo === 'resumen') return resumen(root, sec, P);
 
@@ -89,12 +90,12 @@
 
     // Factores de demanda del sector
     const f = (k, l, hint) => h('label', null, h('span', null, l), C.numInput(sec.fdServ, k, { ph: fmt(P[k], 2), step: '0.05', label: l, after: refresh }), h('small', { class: 'hint' }, hint));
-    root.appendChild(h('h3', { class: 'sp' }, 'Factores de demanda de este sector'));
+    root.appendChild(h('h3', { class: 'sp' }, 'Factores de demanda de este nivel / sector'));
     root.appendChild(h('div', { class: 'card form' },
       f('fdLuz', 'Alumbrado', 'Tabla ' + art + '.42: 100 % salvo ocupaciones listadas'),
       P.rec44 ? h('label', null, h('span', null, 'Contactos'), h('div', { class: 'static' }, 'Tabla ' + art + '.44 (10 kVA al 100 %, resto al 50 %)')) : f('fdRec', 'Contactos (generales y UPS)', 'criterio de proyecto'),
       f('fdEq', 'Equipos', '430.24 / 430.26'), f('fdEsp', 'Equipos especiales', 'placa de datos'), f('fdHvac', 'Fuerza (sistema de A/A)', art + '.60 / 430.26')));
-    root.appendChild(h('p', { class: 'hint' }, 'Vacío = valor por defecto del perfil activo (Parámetros NEC). Los valores escritos aquí solo afectan a este sector.'));
+    root.appendChild(h('p', { class: 'hint' }, 'Vacío = valor por defecto del perfil activo (Parámetros NEC). Los valores escritos aquí solo afectan a este nivel / sector.'));
 
     root.appendChild(h('h3', { class: 'sp' }, 'Elevadores · Tabla 620.14'));
     root.appendChild(elevadores(sec, P, refresh));

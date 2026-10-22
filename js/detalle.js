@@ -56,7 +56,7 @@
       const copiar = h('select', { 'aria-label': 'Copiar a' },
         h('option', { value: '' }, 'Copiar esta configuración a…'),
         h('option', { value: 'grupo' }, 'las viviendas del mismo nivel / tipo'),
-        h('option', { value: 'sector' }, 'todas las viviendas del sector'));
+        h('option', { value: 'sector' }, 'todas las viviendas del nivel / sector'));
       const btnCopiar = h('button', { class: 'btn', onclick: () => {
         if (!copiar.value) return;
         const dest = sec.deptos.filter(x => x !== r && (copiar.value === 'sector' || x.grupo === r.grupo));
@@ -71,7 +71,8 @@
 
       dlg.appendChild(h('div', { class: 'dform' },
         h('div', { class: 'dhead' },
-          h('h3', null, 'Cargas de la vivienda', r.grupo ? h('small', { class: 'muted' }, ' · ' + r.grupo) : null),
+          h('div', { class: 'dtitle' }, h('h3', null, 'Cargas de la vivienda', r.grupo ? h('small', { class: 'muted' }, ' · ' + r.grupo) : null),
+            h('span', { class: 'badge', title: 'Se cambia en la página Proyecto' }, 'Sistema: ' + P.vUnit + ' V · ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico'))),
           h('div', { class: 'toolbar' },
             h('label', { class: 'inline' }, h('span', null, 'Nombre'), C.textInput(r, 'nombre', { label: 'Nombre de la vivienda', ph: 'DEPTO A1' })),
             h('label', { class: 'inline' }, h('span', null, 'Área [m²]'), C.numInput(r, 'area', { label: 'Área', after: upd })))),
@@ -112,6 +113,7 @@
               res('OCPD [A]', c => c.brk === null ? 'excede tabla' : c.brk, 'tot'),
               res('Calibre cobre', c => c.cu ? c.cu.cu : '—'),
               res('Calibre aluminio', c => c.cu ? c.cu.al : '—'))))),
+        h('p', { class: 'hint' }, 'Espacio mínimo de cuartos principales (referencia): cuarto eléctrico ' + fmt(P.cuartoElecM2, 1) + ' m² · cuarto de telecomunicaciones ' + fmt(P.cuartoTelM2, 1) + ' m². Se cambian en Parámetros NEC.'),
         h('div', { class: 'dfoot' },
           h('label', { class: 'inline' }, copiar, btnCopiar), h('span', { class: 'grow' }),
           h('button', { class: 'btn primary', onclick: () => { dlg.close(); fin(); } }, 'Cerrar'))));

@@ -20,7 +20,7 @@
       sv('PRIMER NIVEL', 'PASILLO DE SERVICIO', 27.16, 'pasillos'), sv('PRIMER NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras'),
       sv('SEGUNDO NIVEL', 'PASILLO DE SERVICIO', 278.72, 'pasillos'), sv('SEGUNDO NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras')
     ];
-    const A = { id: uid(), nombre: 'Sector A', modo: 'detalle', deptos: [tipoA], servicios, elevadores: [], fdServ: {}, resumen: { depLC: 0, depAC: 0, svLC: 0, svAC: 0, svFDlc: null, svFDac: null } };
+    const A = { id: uid(), nombre: 'Nivel 1', modo: 'detalle', deptos: [tipoA], servicios, elevadores: [], fdServ: {}, resumen: { depLC: 0, depAC: 0, svLC: 0, svAC: 0, svFDlc: null, svFDac: null } };
     return {
       version: 1,
       proyecto: { nombre: '', ubicacion: '', fecha: '', responsable: '' },

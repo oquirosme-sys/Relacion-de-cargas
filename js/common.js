@@ -70,7 +70,7 @@
     head.appendChild(h('div', { class: 'actions no-print' },
       h('button', { class: 'btn small', onclick: () => descargar('cargas-proyecto.json', Store.exportar(), 'application/json') }, 'Exportar proyecto'),
       h('button', { class: 'btn small', onclick: () => inp.click() }, 'Importar'),
-      h('button', { class: 'btn small danger', onclick: () => { if (confirm('Se borrará el proyecto actual y se creará uno en blanco (un sector con una vivienda Tipo A). Exporte antes si quiere conservarlo. ¿Continuar?')) { Store.ejemplo(); location.reload(); } } }, 'Proyecto en blanco'),
+      h('button', { class: 'btn small danger', onclick: () => { if (confirm('Se borrará el proyecto actual y se creará uno en blanco (un nivel / sector con una vivienda). Exporte antes si quiere conservarlo. ¿Continuar?')) { Store.ejemplo(); location.reload(); } } }, 'Proyecto en blanco'),
       inp));
     const nav = document.getElementById('tabs');
     PAGES.forEach(p => nav.appendChild(h('a', { class: 'tab', href: p[0], 'aria-current': p[0] === id ? 'page' : null }, p[1])));
@@ -79,7 +79,7 @@
   /** Selector de sector compartido por Departamentos y Servicios. */
   function selectorSector(onchange) {
     const S = Store.state;
-    const sel = h('select', { 'aria-label': 'Sector', onchange: () => { S.activo = sel.value; Store.save(); onchange(); } },
+    const sel = h('select', { 'aria-label': 'Nivel / sector', onchange: () => { S.activo = sel.value; Store.save(); onchange(); } },
       S.sectores.map(s => h('option', { value: s.id, selected: s.id === S.activo }, s.nombre)));
     return sel;
   }

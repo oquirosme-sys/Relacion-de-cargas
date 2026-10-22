@@ -50,12 +50,12 @@
         ['hvacFD', 'Factor HVAC por vivienda', '', art + '.82(C) / ' + art + '.60 (NEC = 1)'],
         ['divFD', 'Factor de diversidad del alimentador de vivienda', '', 'criterio de proyecto (1 = sin reducción)'],
         ['appl53Min', 'N.º mínimo de aparatos fijos para aplicar ' + art + '.53', 'n.º', art + '.53 (4 o más)']]],
-      ['Sector y proyecto (transformador)', [
+      ['Nivel / sector y proyecto (transformador)', [
         ['applFD', 'Aparatos fijos y equipos especiales', '', art + '.53 (75 % con 4 o más)'],
-        ['hvacAggFD', 'Factor HVAC de sector', '', art + '.60'],
+        ['hvacAggFD', 'Factor HVAC de nivel / sector', '', art + '.60'],
         ['hvacProjFD', 'Factor HVAC de proyecto', '', art + '.60'],
-        ['svcFD', 'Factor de demanda de servicios en modo resumen', '', 'solo sectores capturados como totales'],
-        ['fCoinc', 'Factor de coincidencia entre sectores', '', 'criterio de proyecto (1 = sin reducción)'],
+        ['svcFD', 'Factor de demanda de servicios en modo resumen', '', 'solo niveles / sectores capturados como totales'],
+        ['fCoinc', 'Factor de coincidencia entre niveles / sectores', '', 'criterio de proyecto (1 = sin reducción)'],
         ['pf', 'Factor de potencia', '', 'kW = kVA × FP']]],
       ['Servicios: factores de demanda por tipo de carga (valor por defecto)', [
         ['fdLuz', 'Alumbrado', '', 'Tabla ' + art + '.42 (otros = 100 %)'],
@@ -64,6 +64,9 @@
         ['fdEsp', 'Equipos especiales', '', 'placa de datos'],
         ['fdHvac', 'Fuerza (sistema de A/A)', '', art + '.60 / 430.26'],
         ['fdElev', 'Elevadores (si no es automático)', '', '620.14']]],
+      ['Referencia (no entra en los cálculos)', [
+        ['cuartoElecM2', 'Espacio mínimo del cuarto eléctrico', 'm²', 'referencia de diseño'],
+        ['cuartoTelM2', 'Espacio mínimo del cuarto de telecomunicaciones', 'm²', 'referencia de diseño']]],
       ['Alimentadores e interruptores', [
         ['vUnit', 'Tensión del alimentador de vivienda', 'V', ''],
         ['fases', 'Fases (1 o 3)', '', ''],

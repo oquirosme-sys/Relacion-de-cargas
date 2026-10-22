@@ -13,6 +13,19 @@
     root.appendChild(h('div', { class: 'card form' }, campo('Nombre del proyecto', 'nombre'), campo('Ubicación', 'ubicacion'), campo('Fecha', 'fecha'), campo('Elaboró', 'responsable'),
       h('label', null, h('span', null, 'Edición del NEC'), h('div', { class: 'static' }, P.etiqueta, ' ', h('a', { href: 'parametros.html' }, 'cambiar'))) ));
 
+    // Sistema eléctrico del proyecto: lo usan los alimentadores de viviendas y servicios
+    const txtSis = () => P.vUnit + ' V · ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico');
+    const lblSis = h('b', null, txtSis());
+    const volt = C.numInput(P, 'vUnit', { label: 'Tensión del proyecto [V]', step: '1', vacio: 0, after: () => { lblSis.textContent = txtSis(); } });
+    volt.setAttribute('list', 'voltajes');
+    const fases = h('select', { 'aria-label': 'Fases', onchange: e => { P.fases = Number(e.target.value); Store.save(); lblSis.textContent = txtSis(); } },
+      h('option', { value: 1, selected: Number(P.fases) !== 3 }, 'Monofásico (1 fase)'), h('option', { value: 3, selected: Number(P.fases) === 3 }, 'Trifásico (3 fases)'));
+    root.appendChild(h('div', { class: 'card form' },
+      h('label', null, h('span', null, 'Tensión del proyecto [V]'), volt, h('small', { class: 'hint' }, 'Entre fases del alimentador: 208, 240, 380, 480…')),
+      h('label', null, h('span', null, 'Sistema'), fases),
+      h('label', null, h('span', null, 'Sistema del proyecto'), h('div', { class: 'static' }, lblSis, ' · se usa en las cajas, en Departamentos y en Servicios')),
+      h('datalist', { id: 'voltajes' }, [120, 208, 220, 240, 277, 380, 440, 460, 480].map(v => h('option', { value: v })))));
+
     const R = NEC.resumenProyecto(S.sectores, P), T = R.tot;
 
     root.appendChild(h('h2', { class: 'sp' }, 'Relación de cargas completa'));
@@ -23,12 +36,12 @@
       rows.push(h('tr', null, h('td', null, sn ? sn + ' · Viviendas' : 'Viviendas'), nums(r.dep.ciLC, r.dep.ciAC, r.dep.ci, r.dep.cdLC, r.dep.cdAC, r.dep.cd, r.depTr)));
       rows.push(h('tr', null, h('td', null, sn ? sn + ' · Servicios' : 'Servicios'), nums(r.sv.ciLC, r.sv.ciAC, r.sv.ci, r.sv.cdLC, r.sv.cdAC, r.sv.cd, r.svTr)));
     });
-    rows.push(h('tr', { class: 'tot' }, h('td', null, 'SUMA DE SECTORES'),
+    rows.push(h('tr', { class: 'tot' }, h('td', null, 'SUMA DE NIVELES / SECTORES'),
       nums(sum(R, 'ciLC'), sum(R, 'ciAC'), sum(R, 'ci'), sum(R, 'cdLC'), sum(R, 'cdAC'), sum(R, 'cd'), null)));
     root.appendChild(h('div', { class: 'tablewrap' }, h('table', { class: 'grid res' },
-      h('thead', null, th(['Sector / tipo', 'C.I. alumbrado y contactos [kVA]', 'C.I. A/A [kVA]', 'C.I. total [kVA]', 'C.D. alumbrado y contactos [kVA]', 'C.D. A/A [kVA]', 'C.D. sectorial [kVA]', 'Transformador del sector'])),
+      h('thead', null, th(['Nivel / sector · tipo', 'C.I. alumbrado y contactos [kVA]', 'C.I. A/A [kVA]', 'C.I. total [kVA]', 'C.D. alumbrado y contactos [kVA]', 'C.D. A/A [kVA]', 'C.D. sectorial [kVA]', 'Transformador del sector'])),
       h('tbody', null, rows))));
-    root.appendChild(h('p', { class: 'hint' }, 'La “suma de sectores” aplica los factores de cada sector por separado. La demanda del proyecto completo aplica la Tabla ' + art + '.42 sobre el conjunto de las viviendas' + (P.proyServSeparado ? ' y suma los servicios propios con sus propios factores.' : ' y servicios juntos (criterio de la hoja original).')));
+    root.appendChild(h('p', { class: 'hint' }, 'La “suma de niveles / sectores” aplica los factores de cada uno por separado. La demanda del proyecto completo aplica la Tabla ' + art + '.42 sobre el conjunto de las viviendas' + (P.proyServSeparado ? ' y suma los servicios propios con sus propios factores.' : ' y servicios juntos (criterio de la hoja original).')));
 
     // Totales del proyecto
     const f = (n, ref, ci, ciKw, fd, cdKw, cd, b) => h('tr', { class: b ? 'tot' : null }, h('td', null, n), h('td', null, ref), h('td', { class: 'r' }, fmt(ci, 2)), h('td', { class: 'r' }, fmt(ciKw, 2)),
@@ -48,6 +61,8 @@
       h('span', null, 'Factor de demanda global', h('b', null, C.pct(T.fd))),
       P.fCoinc !== 1 ? h('span', null, 'Demanda coincidente (× ' + fmt(P.fCoinc, 2) + ')', h('b', null, fmt(T.cdCoinc, 1) + ' kVA')) : null,
       h('span', null, 'Transformación mínima (' + (Number(P.fases) === 3 ? 'trifásica' : 'equivalente') + ')', h('b', null, tr.n ? (tr.n > 1 ? tr.n + ' × ' : '') + fmt(tr.size, 1) + ' kVA' + (tr.n > 1 ? ' = ' + fmt(tr.total, 0) + ' kVA' : '') : '—'))));
+
+    root.appendChild(h('p', { class: 'hint' }, 'Referencia de diseño · espacio mínimo de cuartos principales: cuarto eléctrico ' + fmt(P.cuartoElecM2, 1) + ' m² · cuarto de telecomunicaciones ' + fmt(P.cuartoTelM2, 1) + ' m² (no entra en los cálculos).'));
 
     // Método opcional multifamiliar
     const M = NEC.multifamiliar(S.sectores, P);
@@ -76,7 +91,7 @@
 
   function exportarCSV(R) {
     const T = R.tot, f = x => Math.round(x * 1000) / 1000;
-    const filas = [['Sector', 'Tipo', 'C.I. alumbrado y contactos kVA', 'C.I. A/A kVA', 'C.I. total kVA', 'C.D. alumbrado y contactos kVA', 'C.D. A/A kVA', 'C.D. kVA']];
+    const filas = [['Nivel / sector', 'Tipo', 'C.I. alumbrado y contactos kVA', 'C.I. A/A kVA', 'C.I. total kVA', 'C.D. alumbrado y contactos kVA', 'C.D. A/A kVA', 'C.D. kVA']];
     R.rows.forEach(r => {
       filas.push([r.sec.nombre, 'Viviendas', f(r.dep.ciLC), f(r.dep.ciAC), f(r.dep.ci), f(r.dep.cdLC), f(r.dep.cdAC), f(r.dep.cd)]);
       filas.push([r.sec.nombre, 'Servicios', f(r.sv.ciLC), f(r.sv.ciAC), f(r.sv.ci), f(r.sv.cdLC), f(r.sv.cdAC), f(r.sv.cd)]);

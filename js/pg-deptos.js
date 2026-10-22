@@ -9,6 +9,7 @@
     const P = Store.state.params, sec = Store.sector(), art = P.art;
     root.appendChild(C.barraSector(render));
     root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · viviendas'));
+    root.appendChild(h('p', { class: 'hint' }, 'Sistema del proyecto: ' + P.vUnit + ' V · ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico') + ' (se cambia en la página Proyecto).'));
 
     if (sec.modo === 'resumen') return resumen(root, sec, P);
 
@@ -42,7 +43,14 @@
       const tr = h('tr', null,
         h('td', { class: 'in' }, C.textInput(r, 'grupo', { list: 'grupos', label: 'Nivel / tipo', after: () => { sync(); refresh(); } })),
         h('td', { class: 'name' }, (out.btn = h('button', { class: 'namebtn', title: 'Clic para abrir la caja de cargas y dispositivos de esta vivienda',
-          onclick: () => C.abrirDetalle(r, sec, refresh) }, ''))),
+          onclick: () => C.abrirDetalle(r, sec, () => {
+            // al cerrar la caja se vuelve a dibujar la tabla para que muestre los datos cambiados y recalcule las sumatorias
+            const w = document.querySelector('.tablewrap.big'), pos = w ? [w.scrollLeft, w.scrollTop] : [0, 0], py = window.scrollY;
+            render();
+            const w2 = document.querySelector('.tablewrap.big');
+            if (w2) { w2.scrollLeft = pos[0]; w2.scrollTop = pos[1]; }
+            window.scrollTo(0, py);
+          }) }, ''))),
         num('area', '', 'Área'),
         num('dens', fmt(P.lightVA, 0), 'Densidad alumbrado'),
         num('sac', fmt(P.sacN * P.sacVA, 0), 'Contactos aparatos pequeños'),
@@ -71,12 +79,16 @@
         const o = x.out;
         o.btn.textContent = (x.r.nombre || '(sin nombre)') + (c.dv.usa ? '  ▸ ' + (c.dv.lines.length + c.dv.lines53.length) + ' disp.' : '  ▸');
         o.btn.classList.toggle('usa', c.dv.usa);
-        ['esp', 'apar', 'coc', 'cal'].forEach(k => {
-          const el = x.ins[k]; el.disabled = c.dv.usa;
-          if (c.dv.usa) el.placeholder = fmt(c[k], 0);
-        });
+        // celdas derivadas (de las listas o de la densidad de A/A): se muestran calculadas y no editables
+        const deriva = (el, k, activo, valor) => {
+          if (el.dataset.ph === undefined) el.dataset.ph = el.placeholder;
+          el.disabled = activo;
+          if (activo) { el.value = ''; el.placeholder = fmt(valor, 0); }
+          else { const v = x.r[k]; el.value = v === null || v === undefined ? '' : v; el.placeholder = el.dataset.ph; }
+        };
+        ['esp', 'apar', 'coc', 'cal'].forEach(k => deriva(x.ins[k], k, c.dv.usa, c[k]));
         const hd = x.r.hvacDens !== null && x.r.hvacDens !== undefined && x.r.hvacDens !== '' ? x.r.hvacDens : P.hvacDwVAm2;
-        x.ins.hvac.disabled = hd > 0; if (hd > 0) x.ins.hvac.placeholder = fmt(c.hvac, 0);
+        deriva(x.ins.hvac, 'hvac', hd > 0, c.hvac);
         o.light.textContent = fmt(c.light, 0);
         o.ci.textContent = fmt(c.ci / 1000, 3);
         o.genDem.textContent = fmt(c.genDem, 0);
@@ -138,7 +150,7 @@
 
   function resumen(root, sec, P) {
     const art = P.art;
-    root.appendChild(h('p', { class: 'hint' }, 'Modo resumen: capture los totales instalados de las viviendas de este sector (por ejemplo, tomados de otra hoja). La demanda se calcula con los mismos factores de Parámetros NEC.'));
+    root.appendChild(h('p', { class: 'hint' }, 'Modo resumen: capture los totales instalados de las viviendas de este nivel / sector (por ejemplo, tomados de otra hoja). La demanda se calcula con los mismos factores de Parámetros NEC.'));
     const box = h('div', { class: 'card' });
     const upd = () => { box.textContent = ''; box.appendChild(tablaResumen(NEC.resumenDeptos(sec, P), P, art)); };
     root.appendChild(h('div', { class: 'card form' },
@@ -153,7 +165,7 @@
       h('ul', null,
         h('li', null, 'Carga instalada de la vivienda = alumbrado general + contactos de aparatos pequeños + lavandería + baño GFCI + equipos especiales + aparatos fijos + HVAC.'),
         h('li', null, 'Demanda por vivienda (alimentador): método opcional ' + art + '.82(B): [mín(carga general; ' + fmt(P.tier1, 0) + ' VA) + resto × ' + P.restFD + '] × ' + P.genFD + ' + HVAC × ' + P.hvacFD + '. Se corrige la hoja original para que una vivienda con carga general menor al primer escalón no reciba un descuento negativo.'),
-        h('li', null, 'Demanda del sector (transformador): Tabla ' + art + '.42 sobre alumbrado y contactos de todas las viviendas' + (P.tablaIncluyeEquipos ? ' (incluye equipos especiales y aparatos fijos, como la hoja original)' : '; aparatos fijos, equipos especiales y calentadores al ' + fmt(P.applFD * 100, 0) + ' % (' + art + '.53) y cocinas por Tabla ' + art + '.55') + '; HVAC × ' + P.hvacAggFD + '.'),
+        h('li', null, 'Demanda del nivel / sector (transformador): Tabla ' + art + '.42 sobre alumbrado y contactos de todas las viviendas' + (P.tablaIncluyeEquipos ? ' (incluye equipos especiales y aparatos fijos, como la hoja original)' : '; aparatos fijos, equipos especiales y calentadores al ' + fmt(P.applFD * 100, 0) + ' % (' + art + '.53) y cocinas por Tabla ' + art + '.55') + '; HVAC × ' + P.hvacAggFD + '.'),
         h('li', null, 'Interruptor: corriente de protección = ' + P.protFactor + ' × I demandada, siguiente valor normalizado (240.6(A)), mínimo ' + P.minBreaker + ' A. Tensión ' + P.vUnit + ' V, ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico') + '.'),
         h('li', null, 'Los resultados son estimaciones preliminares; confirme secciones y valores contra el texto oficial de la edición del NEC adoptada en el proyecto.')));
   }
