@@ -14,17 +14,18 @@
       h('label', null, h('span', null, 'Edición del NEC'), h('div', { class: 'static' }, P.etiqueta, ' ', h('a', { href: 'parametros.html' }, 'cambiar'))) ));
 
     // Sistema eléctrico del proyecto: lo usan los alimentadores de viviendas y servicios
-    const txtSis = () => P.vUnit + ' V · ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico');
-    const lblSis = h('b', null, txtSis());
-    const volt = C.numInput(P, 'vUnit', { label: 'Tensión del proyecto [V]', step: '1', vacio: 0, after: () => { lblSis.textContent = txtSis(); } });
-    volt.setAttribute('list', 'voltajes');
-    const fases = h('select', { 'aria-label': 'Fases', onchange: e => { P.fases = Number(e.target.value); Store.save(); lblSis.textContent = txtSis(); } },
-      h('option', { value: 1, selected: Number(P.fases) !== 3 }, 'Monofásico (1 fase)'), h('option', { value: 3, selected: Number(P.fases) === 3 }, 'Trifásico (3 fases)'));
+    const lblSis = h('b', null, NEC.nombreSistema(P.vUnit, P.fases));
+    const actual = NEC.sistemaPorVF(P.vUnit, P.fases);
+    const selSis = h('select', { 'aria-label': 'Sistema eléctrico del proyecto', onchange: e => {
+      const x = NEC.SISTEMAS.find(y => y.id === e.target.value);
+      if (!x) return;
+      P.vUnit = x.v; P.fases = x.f; Store.save(); lblSis.textContent = x.n;
+    } }, actual ? null : h('option', { value: '', selected: true }, 'Personalizado: ' + NEC.nombreSistema(P.vUnit, P.fases)),
+      NEC.SISTEMAS.map(x => h('option', { value: x.id, selected: !!actual && actual.id === x.id }, x.n)));
     root.appendChild(h('div', { class: 'card form' },
-      h('label', null, h('span', null, 'Tensión del proyecto [V]'), volt, h('small', { class: 'hint' }, 'Entre fases del alimentador: 208, 240, 380, 480…')),
-      h('label', null, h('span', null, 'Sistema'), fases),
-      h('label', null, h('span', null, 'Sistema del proyecto'), h('div', { class: 'static' }, lblSis, ' · se usa en las cajas, en Departamentos y en Servicios')),
-      h('datalist', { id: 'voltajes' }, [120, 208, 220, 240, 277, 380, 440, 460, 480].map(v => h('option', { value: v })))));
+      h('label', null, h('span', null, 'Sistema eléctrico del proyecto'), selSis,
+        h('small', { class: 'hint' }, 'Configuración de tensión y fases del alimentador. Cada vivienda puede cambiarla en su caja.')),
+      h('label', null, h('span', null, 'Sistema activo'), h('div', { class: 'static' }, lblSis, ' · valor por defecto de las cajas de vivienda y de Servicios'))));
 
     const R = NEC.resumenProyecto(S.sectores, P), T = R.tot;
 

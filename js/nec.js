@@ -132,6 +132,18 @@
     return p;
   }
 
+  /* Sistemas eléctricos normalizados: tensión de línea (V) y fases que usan los alimentadores. */
+  const SISTEMAS = [
+    { id: '240-1', n: '120/240 V · monofásico, 3 hilos', v: 240, f: 1 },
+    { id: '240-3', n: '120/240 V · trifásico, 4 hilos (delta)', v: 240, f: 3 },
+    { id: '208-3', n: '120/208 V · trifásico, 4 hilos', v: 208, f: 3 },
+    { id: '208-1', n: '120/208 V · monofásico, 3 hilos', v: 208, f: 1 },
+    { id: '480-3', n: '277/480 V · trifásico, 4 hilos', v: 480, f: 3 },
+    { id: '480-1', n: '277/480 V · monofásico, 3 hilos', v: 480, f: 1 }
+  ];
+  const sistemaPorVF = (v, f) => SISTEMAS.find(x => x.v === Number(v) && x.f === Number(f)) || null;
+  const nombreSistema = (v, f) => { const x = sistemaPorVF(v, f); return x ? x.n : v + ' V · ' + (Number(f) === 3 ? 'trifásico' : 'monofásico'); };
+
   const num = v => (v === null || v === undefined || v === '' || isNaN(Number(v))) ? 0 : Number(v);
   const dflt = (v, d) => (v === null || v === undefined || v === '') ? d : Number(v);
 
@@ -154,7 +166,7 @@
     return null;
   }
 
-  function corriente(va, P) { return va / (P.vUnit * (Number(P.fases) === 3 ? Math.sqrt(3) : 1)); }
+  function corriente(va, P, v, f) { v = v || P.vUnit; f = f || P.fases; return va / (v * (Number(f) === 3 ? Math.sqrt(3) : 1)); }
 
   /** Dispositivos elegidos de las listas de la caja de la vivienda.
       disp = lista a 100 %; disp53 = aparatos con factor 220.53 (75 % si son 4 o más).
@@ -231,10 +243,12 @@
     const ci = gLC + gEq + coc + hvac;           // instalada sin factores
     const totales = general + hvac;              // sub-total + HVAC
     const fUso = totales ? dem0 / totales : 0;
-    const iInst = corriente(ci, P), iDem = corriente(dem, P), iProt = iDem * P.protFactor;
+    const sis = SISTEMAS.find(x => x.id === r.sistema) || null;
+    const vUnit = sis ? sis.v : P.vUnit, fases = sis ? sis.f : P.fases;
+    const iInst = corriente(ci, P, vUnit, fases), iDem = corriente(dem, P, vUnit, fases), iProt = iDem * P.protFactor;
     const std = siguiente(iProt, P.breakers);
     const brk = std === null ? null : Math.max(std, P.minBreaker);
-    return { area, light, recDw, ext, telecom, detect, sac, lav, gfci, coc, cocLista, cal, calExtra, esp, apar, gLC, gEq, general, genDem, cond, manejVA, hvac, hvacDem, dem0, divFD, totales, fUso, ci, dem, iInst, iDem, iProt, brk, dv, metodo, aplic53, cu: conductor(brk, P) };
+    return { vUnit, fases, area, light, recDw, ext, telecom, detect, sac, lav, gfci, coc, cocLista, cal, calExtra, esp, apar, gLC, gEq, general, genDem, cond, manejVA, hvac, hvacDem, dem0, divFD, totales, fUso, ci, dem, iInst, iDem, iProt, brk, dv, metodo, aplic53, cu: conductor(brk, P) };
   }
 
   /** Espacio de servicios: área × % aplicado × densidades (VA/m²) + cargas fijas (VA). */
@@ -385,6 +399,6 @@
     return { n, ciKva, fd, cd: fd === null ? null : ciKva * fd };
   }
 
-  g.NEC = { PERFILES, nuevosParams, escalonada, siguiente, calcDepto, calcServicio, dispositivos, lineas, conductor, calcElevadores, resumenDeptos, resumenServicios,
+  g.NEC = { PERFILES, nuevosParams, escalonada, siguiente, calcDepto, calcServicio, dispositivos, lineas, conductor, SISTEMAS, sistemaPorVF, nombreSistema, calcElevadores, resumenDeptos, resumenServicios,
     resumenProyecto, transformador, multifamiliar, TABLA_42, TABLA_84, TABLA_44, TABLA_620, OCUP_NEC, BRK_NEC, BRK_EXCEL, TRAFOS_3F };
 })(typeof window !== 'undefined' ? window : globalThis);

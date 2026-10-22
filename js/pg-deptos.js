@@ -9,7 +9,7 @@
     const P = Store.state.params, sec = Store.sector(), art = P.art;
     root.appendChild(C.barraSector(render));
     root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · viviendas'));
-    root.appendChild(h('p', { class: 'hint' }, 'Sistema del proyecto: ' + P.vUnit + ' V · ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico') + ' (se cambia en la página Proyecto).'));
+    root.appendChild(h('p', { class: 'hint' }, 'Sistema del proyecto: ' + NEC.nombreSistema(P.vUnit, P.fases) + ' (se cambia en la página Proyecto; cada vivienda puede cambiarlo en su caja).'));
 
     if (sec.modo === 'resumen') return resumen(root, sec, P);
 

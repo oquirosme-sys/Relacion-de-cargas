@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   const h = C.h, fmt = C.fmt;
-  const COPIA = ['dens', 'recDw', 'extDw', 'sac', 'lav', 'gfci', 'telecom', 'detect', 'hvacDens', 'manej', 'hvac', 'coc', 'cal', 'apar', 'esp', 'divFD'];
+  const COPIA = ['sistema', 'dens', 'recDw', 'extDw', 'sac', 'lav', 'gfci', 'telecom', 'detect', 'hvacDens', 'manej', 'hvac', 'coc', 'cal', 'apar', 'esp', 'divFD'];
 
   C.abrirDetalle = function (r, sec, alCerrar) {
     const P = Store.state.params, art = P.art;
@@ -51,6 +51,11 @@
           h('div', { class: 'toolbar' }, add, h('span', { class: 'hint' }, ayuda)));
       }
 
+      function selSistema() {
+        return h('select', { 'aria-label': 'Sistema eléctrico de la vivienda', title: 'Por defecto el del proyecto', onchange: e => { r.sistema = e.target.value === '' ? null : e.target.value; Store.save(); draw(); } },
+          h('option', { value: '', selected: !r.sistema }, 'Proyecto (' + NEC.nombreSistema(P.vUnit, P.fases) + ')'),
+          NEC.SISTEMAS.map(x => h('option', { value: x.id, selected: r.sistema === x.id }, x.n)));
+      }
       const res = (n, get, cls) => h('tr', { class: cls }, h('td', { colspan: 2 }, n), out(get));
       const dv0 = NEC.dispositivos(r, P);
       const copiar = h('select', { 'aria-label': 'Copiar a' },
@@ -71,11 +76,11 @@
 
       dlg.appendChild(h('div', { class: 'dform' },
         h('div', { class: 'dhead' },
-          h('div', { class: 'dtitle' }, h('h3', null, 'Cargas de la vivienda', r.grupo ? h('small', { class: 'muted' }, ' · ' + r.grupo) : null),
-            h('span', { class: 'badge', title: 'Se cambia en la página Proyecto' }, 'Sistema: ' + P.vUnit + ' V · ' + (Number(P.fases) === 3 ? 'trifásico' : 'monofásico'))),
+          h('div', { class: 'dtitle' }, h('h3', null, 'Cargas de la vivienda', r.grupo ? h('small', { class: 'muted' }, ' · ' + r.grupo) : null)),
           h('div', { class: 'toolbar' },
             h('label', { class: 'inline' }, h('span', null, 'Nombre'), C.textInput(r, 'nombre', { label: 'Nombre de la vivienda', ph: 'DEPTO A1' })),
-            h('label', { class: 'inline' }, h('span', null, 'Área [m²]'), C.numInput(r, 'area', { label: 'Área', after: upd })))),
+            h('label', { class: 'inline' }, h('span', null, 'Área [m²]'), C.numInput(r, 'area', { label: 'Área', after: upd })),
+            h('label', { class: 'inline' }, h('span', null, 'Sistema'), selSistema()))),
         h('div', { class: 'dgrid' },
           h('div', null,
             h('h4', null, 'Cargas generales'),
@@ -108,7 +113,7 @@
               res('F. de uso', c => fmt(c.fUso, 2)),
               res('F. de diversidad', c => fmt(c.divFD, 2)),
               res('kVA demanda', c => fmt(c.dem / 1000, 2), 'tot'),
-              res('Amperios [' + P.vUnit + ' V, ' + (Number(P.fases) === 3 ? '3 fases' : '1 fase') + ']', c => fmt(c.iDem, 1)),
+              res('Amperios [' + (NEC.SISTEMAS.find(x => x.id === r.sistema) ? NEC.SISTEMAS.find(x => x.id === r.sistema).v : P.vUnit) + ' V, ' + (Number((NEC.SISTEMAS.find(x => x.id === r.sistema) || { f: P.fases }).f) === 3 ? '3 fases' : '1 fase') + ']', c => fmt(c.iDem, 1)),
               res('× ' + P.protFactor + ' [A]', c => fmt(c.iProt, 1)),
               res('OCPD [A]', c => c.brk === null ? 'excede tabla' : c.brk, 'tot'),
               res('Calibre cobre', c => c.cu ? c.cu.cu : '—'),
