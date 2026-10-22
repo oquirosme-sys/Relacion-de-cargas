@@ -110,7 +110,7 @@
     // Catálogo de dispositivos
     root.appendChild(h('h3', { class: 'sp' }, 'Catálogo de dispositivos de vivienda (lista de selección)'));
     const tc = h('tbody');
-    const CATS = [['fijo', 'Aparato fijo (75 % con 4 o más)'], ['cocina', 'Cocina / horno (Tabla ' + art + '.55)'], ['calentador', 'Calentador de agua'], ['esp', 'Equipo especial']];
+    const CATS = [['toma', 'Toma / carga enchufada (Tabla ' + art + '.42)'], ['fijo', 'Aparato fijo (75 % con 4 o más)'], ['secadora', 'Secadora (' + art + '.54, mín. 5 kW)'], ['cocina', 'Cocina / horno (Tabla ' + art + '.55)'], ['calentador', 'Calentador de agua'], ['esp', 'Equipo especial']];
     P.catalogo.forEach(it => tc.appendChild(h('tr', null,
       h('td', { class: 'in' }, C.textInput(it, 'n', { label: 'Dispositivo' })),
       h('td', { class: 'in' }, C.numInput(it, 'kva', { vacio: 0, step: 'any', label: 'kVA' })),

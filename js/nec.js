@@ -45,13 +45,13 @@
   /* Catálogo de dispositivos de vivienda (lista de selección). cat: cocina | calentador | fijo | esp.
      Valores iniciales tomados de la hoja "918 Calculo alimentadores Aptos". */
   const CATALOGO = [
-    { id: 'refrig', n: 'Refrig', kva: 1.2, cat: 'fijo' },
+    { id: 'refrig', n: 'Refrig', kva: 1.2, cat: 'toma' },
     { id: 'cal1', n: 'Calentador paso 1', kva: 10.8, cat: 'calentador' },
     { id: 'cal2', n: 'Calentador paso 2', kva: 10.8, cat: 'calentador' },
     { id: 'tritur', n: 'Triturador', kva: 0.18, cat: 'fijo' },
-    { id: 'secad', n: 'Secadora', kva: 5, cat: 'fijo' },
+    { id: 'secad', n: 'Secadora', kva: 5, cat: 'secadora' },
     { id: 'lavaplatos', n: 'Lavaplatos', kva: 1.2, cat: 'fijo' },
-    { id: 'micro', n: 'Microondas', kva: 1.1, cat: 'fijo' },
+    { id: 'micro', n: 'Microondas', kva: 1.1, cat: 'toma' },
     { id: 'cocina', n: 'Cocina', kva: 4, cat: 'cocina' },
     { id: 'horno', n: 'Horno', kva: 4, cat: 'cocina' },
     { id: 'cochorno', n: 'Cocina/Horno', kva: 8, cat: 'cocina' },
@@ -187,7 +187,9 @@
     const otros = arr => arr.filter(l => l.cat !== 'cocina');
     const nB = otros(B).reduce((a, l) => a + l.q, 0);
     const f53 = nB >= P.appl53Min ? P.applFD : 1;
+    const fijos = all.filter(l => l.cat === 'fijo' || l.cat === 'calentador' || l.cat === 'esp');
     return { lines: A, lines53: B, usa: all.length > 0, coc: S('cocina'), cal: S('calentador'), apar: S('fijo'), esp: S('esp'),
+      toma: S('toma'), secad: S('secadora'), fijoAll: fijos.reduce((a, l) => a + l.tot, 0), nFijos: fijos.reduce((a, l) => a + l.q, 0),
       tot: sum(all), totA: sum(A), totB: sum(B), otrosA: sum(otros(A)), otrosB: sum(otros(B)), nB, f53, aplic53: sum(otros(B)) * f53 };
   }
 
@@ -220,21 +222,31 @@
     const hd = dflt(r.hvacDens, P.hvacDwVAm2), manejPct = dflt(r.manej, P.manejPct);
     const cond = hd > 0 ? area * hd : num(r.hvac), manejVA = hd > 0 ? cond * manejPct / 100 : 0;
     const hvac = cond + manejVA;
-    const gLC = light + recDw + ext + sac + lav + gfci + telecom + detect;
-    const gEq = esp + apar + cal + calExtra;
-    // aparatos que no son cocina: lista a 100 %, lista 220.53 con su factor (75 % si son 4 o más)
-    const aOtros = (dv.usa ? dv.otrosA : esp + apar + cal) + calExtra;
-    const bOtros = dv.usa ? dv.otrosB : 0;
-    const f53 = dv.nB >= P.appl53Min ? P.applFD : 1;
-    const aplic53 = bOtros * f53;
+    const gBase = light + recDw + ext + sac + lav + gfci + telecom + detect;
+    const T = dv.usa ? dv.toma : 0;                                       // cargas enchufadas (tomas)
+    const D = dv.usa ? dv.secad : 0;                                      // secadora
+    const gLC = gBase + T;                                                // alumbrado, contactos y tomas
+    const gEq = esp + apar + cal + calExtra + D;
     const metodo = P.metodoViv || 'opcional';
-    const general = gLC + coc + aOtros + (metodo === 'opcional' ? bOtros : aplic53);
-    let genDem;
+    let general, genDem, aplic53;
     if (metodo === 'estandar') {
-      // Parte II: Tabla 220.42 a alumbrado, contactos y lavandería; 220.55 cocina; 220.53 aparatos fijos
-      genDem = (escalonada(gLC, P.tabla42) + demCocina(coc > 0 ? 1 : 0, coc) + aOtros + aplic53) * P.genFD;
+      // Parte II (NEC 2020): Tabla 220.42 a alumbrado, contactos, lavandería y tomas; 220.55 cocina; 220.54 secadora (mín. 5 kW);
+      // 220.53 al 75 % si hay 4 o más aparatos fijos (calentadores, lavaplatos, triturador…); A/A al 100 %
+      const F = esp + apar + cal + calExtra;
+      const nF = dv.usa ? dv.nFijos : 0;
+      const fF = nF >= P.appl53Min ? P.applFD : 1;
+      const Dd = D > 0 ? Math.max(D, 5000) : 0;
+      aplic53 = F * fF;
+      general = gBase + T + coc + Dd + aplic53;
+      genDem = (escalonada(gBase + T, P.tabla42) + demCocina(coc > 0 ? 1 : 0, coc) + Dd + aplic53) * P.genFD;
     } else {
-      genDem = (Math.min(general, P.tier1) + Math.max(0, general - P.tier1) * P.restFD) * P.genFD;   // 220.82(B)
+      // opcional 220.82(B) o criterio LUAH: aparatos por lista (lista a 100 %, lista 220.53 con su factor)
+      const aOtros = (dv.usa ? dv.otrosA : esp + apar + cal) + calExtra;
+      const bOtros = dv.usa ? dv.otrosB : 0;
+      const f53 = dv.nB >= P.appl53Min ? P.applFD : 1;
+      aplic53 = bOtros * f53;
+      general = gBase + coc + aOtros + (metodo === 'opcional' ? bOtros : aplic53);
+      genDem = (Math.min(general, P.tier1) + Math.max(0, general - P.tier1) * P.restFD) * P.genFD;
     }
     const hvacDem = hvac * P.hvacFD;
     const dem0 = genDem + hvacDem;
@@ -248,7 +260,7 @@
     const iInst = corriente(ci, P, vUnit, fases), iDem = corriente(dem, P, vUnit, fases), iProt = iDem * P.protFactor;
     const std = siguiente(iProt, P.breakers);
     const brk = std === null ? null : Math.max(std, P.minBreaker);
-    return { vUnit, fases, area, light, recDw, ext, telecom, detect, sac, lav, gfci, coc, cocLista, cal, calExtra, esp, apar, gLC, gEq, general, genDem, cond, manejVA, hvac, hvacDem, dem0, divFD, totales, fUso, ci, dem, iInst, iDem, iProt, brk, dv, metodo, aplic53, cu: conductor(brk, P) };
+    return { vUnit, fases, area, light, recDw, ext, telecom, detect, sac, lav, gfci, coc, cocLista, cal, calExtra, esp, apar, gLC, gEq, general, genDem, cond, manejVA, hvac, hvacDem, dem0, divFD, totales, fUso, ci, dem, iInst, iDem, iProt, brk, dv, metodo, aplic53, tomas: T, secadora: D, cu: conductor(brk, P) };
   }
 
   /** Espacio de servicios: área × % aplicado × densidades (VA/m²) + cargas fijas (VA). */

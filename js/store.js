@@ -52,6 +52,8 @@
       P.ocupaciones.forEach(o => {
         if (o.ash === undefined) { const b = base.ocupaciones.find(x => x.id === o.id); o.ash = b ? b.ash : null; }
       });
+      const nuevaCat = { refrig: 'toma', micro: 'toma', secad: 'secadora' };
+      (P.catalogo || []).forEach(it => { if (nuevaCat[it.id] && it.cat === 'fijo') it.cat = nuevaCat[it.id]; });
       S.sectores.forEach(sec => {
         sec.elevadores = sec.elevadores || [];
         sec.fdServ = sec.fdServ || {};
