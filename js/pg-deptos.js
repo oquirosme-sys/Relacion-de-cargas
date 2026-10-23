@@ -28,7 +28,7 @@
       ['Cocina eléctrica [VA]', art + '.55'], ['Calentador de agua [VA]', art + '.53'],
       ['Fuerza HVAC [VA]', ''], ['Incluir', ''],
       ['Alumbrado [VA]', ''], ['Carga instalada [kVA]', ''], ['Demanda gral. [VA]', P.metodoViv === 'estandar' ? art + '.42 / .53 / .55' : 'opcional ' + art + '.82'], ['Demanda total [kVA]', ''],
-      ['I inst. [A]', ''], ['I dem. [A]', ''], ['I prot. [A]', '×' + P.protFactor], ['Interruptor 2P [A]', ''], ''
+      ['I inst. [A]', ''], ['I dem. [A]', ''], ['I prot. [A]', '×' + P.protFactor], ['Interruptor ' + (Number(P.fases) === 3 ? '3P' : '2P') + ' [A]', 'polos según el sistema'], ''
     ];
     const thead = h('thead', null, h('tr', null, cols.map((c, i) => h('th', { class: i < 13 ? 'in' : (i === 21 ? 'no-print' : 'calc') }, c[0] || '', c[1] ? h('small', null, c[1]) : null))));
     const tbody = h('tbody');
@@ -96,7 +96,9 @@
         o.iInst.textContent = fmt(c.iInst, 1);
         o.iDem.textContent = fmt(c.iDem, 1);
         o.iProt.textContent = fmt(c.iProt, 1);
-        o.brk.textContent = c.brk === null ? 'excede tabla' : c.brk;
+        const polos = Number(c.fases) === 3 ? 3 : 2, polosProy = Number(P.fases) === 3 ? 3 : 2;
+        o.brk.textContent = c.brk === null ? 'excede tabla' : c.brk + (polos !== polosProy ? ' (' + polos + 'P)' : '');
+        o.brk.title = 'Interruptor de ' + polos + ' polos · ' + NEC.nombreSistema(c.vUnit, c.fases);
         x.tr.classList.toggle('off', x.r.incl === false);
         x.tr.classList.toggle('newgrp', x.r.grupo !== prev);
         prev = x.r.grupo;

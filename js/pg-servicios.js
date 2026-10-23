@@ -27,7 +27,7 @@
     const cols = [['Nivel', 'in'], ['Espacio / servicio', 'in'], ['Área [m²]', 'in'], ['% aplicado', 'in'], ['Tipo de espacio', 'in'],
       ['Alumbrado [VA/m²]', 'in'], ['Contactos UPS [VA/m²]', 'in'], ['Contactos [VA/m²]', 'in'], ['HVAC [VA/m²]', 'in'], ['Equipos [VA]', 'in'], ['Especiales [VA]', 'in'], ['Incluir', 'in'],
       ['Alumbrado [kVA]', 'calc'], ['Contactos UPS [kVA]', 'calc'], ['Contactos [kVA]', 'calc'], ['HVAC [kVA]', 'calc'], ['Equipos y esp. [kVA]', 'calc'], ['C. instalada [kVA]', 'calc'],
-      ['I inst. [A]', 'calc'], ['I prot. ×' + P.protFactor + ' [A]', 'calc'], ['Interruptor [A]', 'calc'], ['', 'no-print']];
+      ['I inst. [A]', 'calc'], ['I prot. ×' + P.protFactor + ' [A]', 'calc'], ['Interruptor ' + (Number(P.fases) === 3 ? '3P' : '2P') + ' [A]', 'calc'], ['', 'no-print']];
     const thead = h('thead', null, h('tr', null, cols.map(c => h('th', { class: c[1] }, c[0]))));
     const tbody = h('tbody'), tfoot = h('tfoot'), refs = [];
 

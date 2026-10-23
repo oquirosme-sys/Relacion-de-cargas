@@ -117,7 +117,7 @@
               res('kVA demanda', c => fmt(c.dem / 1000, 2), 'tot'),
               res('Amperios [' + (NEC.SISTEMAS.find(x => x.id === r.sistema) ? NEC.SISTEMAS.find(x => x.id === r.sistema).v : P.vUnit) + ' V, ' + (Number((NEC.SISTEMAS.find(x => x.id === r.sistema) || { f: P.fases }).f) === 3 ? '3 fases' : '1 fase') + ']', c => fmt(c.iDem, 1)),
               res('× ' + P.protFactor + ' [A]', c => fmt(c.iProt, 1)),
-              res('OCPD [A]', c => c.brk === null ? 'excede tabla' : c.brk, 'tot'),
+              res('OCPD [A] (' + (Number(NEC.calcDepto(r, P).fases) === 3 ? '3 polos' : '2 polos') + ')', c => c.brk === null ? 'excede tabla' : c.brk, 'tot'),
               res('Calibre cobre', c => c.cu ? c.cu.cu : '—'),
               res('Calibre aluminio', c => c.cu ? c.cu.al : '—'))))),
         h('p', { class: 'hint' }, 'Espacio mínimo de cuartos principales (referencia): cuarto eléctrico ' + fmt(P.cuartoElecM2, 1) + ' m² · cuarto de telecomunicaciones ' + fmt(P.cuartoTelM2, 1) + ' m². Se cambian en Parámetros NEC.'),
