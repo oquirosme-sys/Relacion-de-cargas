@@ -5,6 +5,8 @@
 
   const BRK_NEC = [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200, 1600, 2000, 2500, 3000, 4000, 5000, 6000];
   const BRK_EXCEL = [15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 3000, 3200, 4000, 5000];
+  /* Generadores normalizados [kVA] (potencia continua o prime a FP 0,8). */
+  const GENERADORES = [20, 30, 40, 50, 60, 80, 100, 125, 150, 200, 250, 300, 350, 400, 500, 600, 750, 800, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 3000];
   const TRAFOS_3F = [15, 30, 45, 75, 112.5, 150, 225, 300, 500, 750, 1000, 1500, 2000, 2500, 3000];
 
   /* Tabla 220.42 / 120.42 (vivienda): primeros 3 000 VA al 100 %, hasta 120 000 VA al 35 %, el resto al 25 %. */
@@ -122,6 +124,7 @@
     p.tabla84 = JSON.parse(JSON.stringify(TABLA_84));
     p.breakers = (id === 'EXCEL' ? BRK_EXCEL : BRK_NEC).slice();
     p.trafos = TRAFOS_3F.slice();
+    p.generadores = GENERADORES.slice();
     p.tabla44 = JSON.parse(JSON.stringify(TABLA_44));
     p.tabla620 = JSON.parse(JSON.stringify(TABLA_620));
     p.catalogo = JSON.parse(JSON.stringify(CATALOGO));
@@ -399,6 +402,53 @@
     return { rows, tot, trafo: transformador(tot.cdCoinc, P) };
   }
 
+  /** Cargas que se pueden meter al generador: por nivel / sector y tipo de carga (demanda de cada nivel / sector). */
+  function cargasGenerador(sectores, P) {
+    const rows = [];
+    sectores.forEach(sec => {
+      const dep = resumenDeptos(sec, P), sv = resumenServicios(sec, P);
+      const add = (k, nombre, ref, ci, cd) => rows.push({ id: sec.id + '|' + k, sec: sec.nombre, nombre, ref, ci, cd });
+      add('viv-lc', 'Viviendas · alumbrado y contactos', 'Tabla ' + P.art + '.42', dep.ciLC, dep.cdLC);
+      add('viv-ac', 'Viviendas · A/A', P.art + '.60', dep.ciAC, dep.cdAC);
+      if (sv.cats && sv.cats.length) sv.cats.forEach(c => add('sv-' + c.k, 'Servicios · ' + c.n, c.ref, c.ci, c.cd));
+      else { add('sv-lc', 'Servicios · alumbrado, contactos y equipos', '', sv.ciLC, sv.cdLC); add('sv-ac', 'Servicios · A/A', '', sv.ciAC, sv.cdAC); }
+    });
+    return rows;
+  }
+  /** Selección por defecto: servicios sin A/A al 100 %; viviendas y A/A fuera. */
+  function selDefecto(id) { return { inc: id.indexOf('|sv-') > 0 && !/sv-(hvac|ac)$/.test(id), pct: 100 }; }
+
+  /** Generador: suma lo elegido (con su % de uso), añade reserva y escoge el tamaño normalizado. */
+  function generador(rows, cfg, P) {
+    const sel = id => Object.assign(selDefecto(id), (cfg.sel || {})[id] || {});
+    const lines = [];
+    rows.forEach(r => {
+      const x = sel(r.id);
+      if (!x.inc) return;
+      const k = num(x.pct) / 100;
+      lines.push({ id: r.id, nombre: r.sec + ' · ' + r.nombre, ref: r.ref, ci: r.ci, fd: r.ci ? r.cd * k / r.ci : 0, pct: num(x.pct), cd: r.cd * k });
+    });
+    (cfg.extra || []).forEach((e, i) => {
+      const kva = num(e.kva), k = dflt(e.pct, 100) / 100;
+      if (kva > 0) lines.push({ id: 'extra' + i, nombre: e.n || 'Carga adicional', ref: 'manual', ci: kva, fd: k, pct: k * 100, cd: kva * k });
+    });
+    const sum = (arr, key) => arr.reduce((a, l) => a + l[key], 0);
+    const ci = sum(lines, 'ci'), cd = sum(lines, 'cd');
+    const margen = num(cfg.margen), fp = dflt(cfg.fp, 0.8);
+    const cdReq = cd * (1 + margen / 100);
+    const kwReq = cdReq * P.pf;
+    const kvaMin = Math.max(cdReq, kwReq / fp);          // el generador debe dar los kVA y los kW de la carga
+    const gen = transformadorLista(kvaMin, P.generadores || GENERADORES);
+    return { lines, ci, cd, kwCi: ci * P.pf, kwCd: cd * P.pf, fd: ci ? cd / ci : 0, margen, fp, cdReq, kwReq, kvaMin, gen, uso: gen.total ? cdReq / gen.total : 0 };
+  }
+  function transformadorLista(kva, lista) {
+    if (!(kva > 0)) return { n: 0, size: 0, total: 0 };
+    const sz = siguiente(kva, lista);
+    if (sz !== null) return { n: 1, size: sz, total: sz };
+    const mx = Math.max.apply(null, lista), n = Math.ceil(kva / mx);
+    return { n, size: mx, total: n * mx };
+  }
+
   /** Método opcional multifamiliar 220.84 / 120.84, informativo. */
   function multifamiliar(sectores, P) {
     let n = 0, ciKva = 0;
@@ -412,5 +462,5 @@
   }
 
   g.NEC = { PERFILES, nuevosParams, escalonada, siguiente, calcDepto, calcServicio, dispositivos, lineas, conductor, SISTEMAS, sistemaPorVF, nombreSistema, calcElevadores, resumenDeptos, resumenServicios,
-    resumenProyecto, transformador, multifamiliar, TABLA_42, TABLA_84, TABLA_44, TABLA_620, OCUP_NEC, BRK_NEC, BRK_EXCEL, TRAFOS_3F };
+    resumenProyecto, transformador, multifamiliar, cargasGenerador, generador, selDefecto, GENERADORES, TABLA_42, TABLA_84, TABLA_44, TABLA_620, OCUP_NEC, BRK_NEC, BRK_EXCEL, TRAFOS_3F };
 })(typeof window !== 'undefined' ? window : globalThis);

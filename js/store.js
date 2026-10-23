@@ -54,6 +54,7 @@
       });
       const nuevaCat = { refrig: 'toma', micro: 'toma', secad: 'secadora' };
       (P.catalogo || []).forEach(it => { if (nuevaCat[it.id] && it.cat === 'fijo') it.cat = nuevaCat[it.id]; });
+      if (!S.generador) S.generador = { margen: 0, fp: 0.8, sel: {}, extra: [] };
       S.sectores.forEach(sec => {
         sec.elevadores = sec.elevadores || [];
         sec.fdServ = sec.fdServ || {};

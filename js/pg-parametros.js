@@ -105,6 +105,7 @@
     } }, P[k].join(', ')), h('small', { class: 'hint' }, ayuda));
     root.appendChild(h('div', { class: 'card' },
       lista('Interruptores normalizados [A]', 'breakers', '240.6(A). El perfil Excel usa la lista de la hoja “.” (incluye 1400, 1800 y 3200 A).'),
+      lista('Generadores normalizados [kVA] (a FP 0,8)', 'generadores', 'Potencia continua; ajuste según el catálogo del proveedor.'),
       lista('Transformadores normalizados [kVA]', 'trafos', 'Trifásicos de uso común; ajuste según el catálogo de la compañía distribuidora.')));
 
     // Catálogo de dispositivos
