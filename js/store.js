@@ -6,13 +6,13 @@
   const KEY = 'cargas.proyecto.v5';
   const uid = () => 's' + Math.random().toString(36).slice(2, 9);
 
-  /** Proyecto en blanco: un sector, una vivienda "Tablero TP" (hoja de alimentadores de aptos) y los espacios de servicios del ejemplo. */
+  /** Proyecto en blanco: un sector, un apartamento "Tipo A" de 250 m² (hoja de alimentadores de aptos) y los espacios de servicios del ejemplo. */
   function ejemplo() {
     const L = ids => ids.map(id => ({ id, qty: 1, kva: null }));
     const disp = L(['refrig', 'tritur', 'lavaplatos', 'micro', 'cocina', 'secad']);
     const disp53 = [1, 2, 3, 4, 5, 6, 7].map(() => ({ id: 'cal1', qty: 1, kva: null }));
     // Valores NEC 2020 (alumbrado, aparatos pequeños, lavandería) y mínimos del Art. 15: no se escriben, salen del perfil.
-    const tipoA = { id: uid(), grupo: 'Tablero TP', nombre: '1', area: 629, dens: null, recDw: null, extDw: null, sac: null, lav: null, gfci: null,
+    const tipoA = { id: uid(), grupo: 'Apartamentos', nombre: 'Tipo A', area: 250, dens: null, recDw: null, extDw: null, sac: null, lav: null, gfci: null,
       telecom: null, detect: null, hvacDens: 80, manej: 10, hvac: 0, coc: null, cal: null, apar: null, esp: null, divFD: null, disp, disp53, incl: true };
     const sv = (grupo, nombre, area, tipo) => ({ id: uid(), grupo, nombre, area, pct: 100, tipo, dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true });
     const servicios = [

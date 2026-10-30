@@ -35,6 +35,12 @@
         onclick: () => {
           if (id === tipoActual) return;
           P.tipoProyecto = id;
+          // Si todo es ejemplo sin tocar, la herramienta queda con un solo nivel / sector ("Nivel 1")
+          const St = Store.state, sinUsoSv = s => (s.servicios || []).every(r => !r.nombre || r.nombre === 'PASILLO DE SERVICIO' || r.nombre === 'ESCALERAS EMERGENCIA' || /^Local \d$/.test(r.nombre));
+          const sinUsoDp = s => (s.deptos || []).every(d => (d.area === 250 && d.nombre === 'Tipo A') || (d.area === 600 && d.grupo === 'Residencia 1'));
+          if (St.sectores.length > 1 && St.sectores.every(s => sinUsoSv(s) && sinUsoDp(s))) {
+            St.sectores = [St.sectores[0]]; St.sectores[0].nombre = 'Nivel 1'; St.activo = St.sectores[0].id;
+          }
           // Al pasar a locales comerciales, los niveles con solo las filas de ejemplo (o vacíos) reciben dos locales de 300 m²
           if (id === 'comercial') Store.state.sectores.forEach(sec => {
             const sinUso = (sec.servicios || []).every(r => !r.nombre || r.nombre === 'PASILLO DE SERVICIO' || r.nombre === 'ESCALERAS EMERGENCIA');
@@ -44,7 +50,7 @@
           // Al pasar a residencial, el ejemplo (o un nivel sin viviendas) queda como una casa de 600 m² con las mismas cargas del apartamento
           if (id === 'residencial') Store.state.sectores.forEach(sec => {
             const d = sec.deptos || (sec.deptos = []);
-            const ej = d.length === 1 && d[0].area === 629 && d[0].grupo === 'Tablero TP';
+            const ej = d.length === 1 && d[0].area === 250 && d[0].nombre === 'Tipo A';
             if (d.length && !ej) return;
             const casa = ej ? d[0] : Store.viviendaEjemplo();
             Object.assign(casa, { grupo: 'Residencia 1', nombre: '1', area: 600 });

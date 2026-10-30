@@ -28,7 +28,7 @@
     sync();
 
     const cols = [
-      ['Nivel / tipo', ''], ['Vivienda', ''], ['Área [m²]', ''], ['Alumbrado [VA/m²]', ''], ['Contactos aparatos peq. [VA]', art + '.52(A)'],
+      ['Nivel / tipo', ''], [C.tipoDe(P).u || 'Vivienda', ''], ['Área [m²]', ''], ['Alumbrado [VA/m²]', ''], ['Contactos aparatos peq. [VA]', art + '.52(A)'],
       ['Lavandería [VA]', art + '.52(B)'], ['Baño GFCI [VA]', '210.11(C)(3)'], ['Equipos especiales [VA]', 'jacuzzi, etc.'], ['Aparatos fijos [VA]', art + '.53'],
       ['Cocina eléctrica [VA]', art + '.55'], ['Calentador de agua [VA]', art + '.53'],
       ['Fuerza HVAC [VA]', ''], ['Incluir', ''],
@@ -111,7 +111,7 @@
       const d = NEC.resumenDeptos(sec, P);
       tfoot.textContent = '';
       tfoot.appendChild(h('tr', { class: 'tot' },
-        h('td', { colspan: 2 }, 'TOTAL (' + d.n + ' viviendas incluidas)'),
+        h('td', { colspan: 2 }, 'TOTAL (' + d.n + ' ' + C.tipoDe(P).viv.toLowerCase() + ' incluidas)'),
         h('td', { class: 'r' }, fmt(sec.deptos.reduce((a, r) => a + (r.incl === false ? 0 : (+r.area || 0)), 0), 2)),
         h('td', { colspan: 10 }),
         h('td', null, ''), h('td', { class: 'r' }, fmt(d.ci, 3)),
@@ -128,7 +128,7 @@
     root.appendChild(envol);
     root.appendChild(dl);
     root.appendChild(h('div', { class: 'toolbar no-print' },
-      h('button', { class: 'btn primary', onclick: () => { const last = sec.deptos[sec.deptos.length - 1]; sec.deptos.push(Store.nuevaFilaDepto(last && last.grupo)); Store.save(); render(); } }, '+ Agregar vivienda'),
+      h('button', { class: 'btn primary', onclick: () => { const last = sec.deptos[sec.deptos.length - 1]; sec.deptos.push(Store.nuevaFilaDepto(last && last.grupo)); Store.save(); render(); } }, '+ Agregar ' + (C.tipoDe(P).u || 'vivienda').toLowerCase()),
       h('span', { class: 'hint' }, 'Para copiar un valor hacia abajo como en Excel: arrastre el cuadrito de la esquina de la celda activa (doble clic = hasta el final) o use Ctrl+D.')));
     root.appendChild(h('h3', { class: 'sp' }, 'Resumen de relación de cargas (viviendas)'));
     root.appendChild(resumenBox);

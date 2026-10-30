@@ -7,7 +7,7 @@
 
   C.abrirDetalle = function (r, sec, alCerrar) {
     const P = Store.state.params, art = P.art;
-    const dlg = h('dialog', { class: 'detalle', 'aria-label': 'Detalle de la vivienda' });
+    const dlg = h('dialog', { class: 'detalle', 'aria-label': 'Detalle · ' + (C.tipoDe(P).u || 'vivienda').toLowerCase() });
     const upds = [];
     const upd = () => upds.forEach(f => f());
     const out = get => { const td = h('td', { class: 'calc r' }); upds.push(() => { td.textContent = get(NEC.calcDepto(r, P)); }); return td; };
@@ -76,7 +76,7 @@
 
       dlg.appendChild(h('div', { class: 'dform' },
         h('div', { class: 'dhead' },
-          h('div', { class: 'dtitle' }, h('h3', null, 'Cargas de la vivienda', r.grupo ? h('small', { class: 'muted' }, ' · ' + r.grupo) : null)),
+          h('div', { class: 'dtitle' }, h('h3', null, 'Cargas ' + (P.tipoProyecto === 'residencial' ? 'de la residencia' : 'del apartamento'), r.grupo ? h('small', { class: 'muted' }, ' · ' + r.grupo) : null)),
           h('div', { class: 'toolbar' },
             h('label', { class: 'inline' }, h('span', null, 'Nombre'), C.textInput(r, 'nombre', { label: 'Nombre de la vivienda', ph: 'DEPTO A1' })),
             h('label', { class: 'inline' }, h('span', null, 'Área [m²]'), C.numInput(r, 'area', { label: 'Área', after: upd })),
