@@ -32,7 +32,26 @@
     root.appendChild(h('div', { class: 'card' },
       h('h3', null, 'Tipo de proyecto'),
       h('div', { class: 'tipos' }, Object.keys(C.TIPOS).map(id => h('button', { class: 'tipo-btn' + (id === tipoActual ? ' on' : ''), 'aria-pressed': id === tipoActual ? 'true' : 'false',
-        onclick: () => { if (id === tipoActual) return; P.tipoProyecto = id; Store.save(); location.reload(); } }, C.TIPOS[id].n))),
+        onclick: () => {
+          if (id === tipoActual) return;
+          P.tipoProyecto = id;
+          // Al pasar a locales comerciales, los niveles con solo las filas de ejemplo (o vacíos) reciben dos locales de 300 m²
+          if (id === 'comercial') Store.state.sectores.forEach(sec => {
+            const sinUso = (sec.servicios || []).every(r => !r.nombre || r.nombre === 'PASILLO DE SERVICIO' || r.nombre === 'ESCALERAS EMERGENCIA');
+            if (!sinUso) return;
+            sec.servicios = ['Local 1', 'Local 2'].map(n => Object.assign(Store.nuevaFilaServicio(sec.nombre), { nombre: n, area: 300, tipo: 'tienda' }));
+          });
+          // Al pasar a residencial, el ejemplo (o un nivel sin viviendas) queda como una casa de 600 m² con las mismas cargas del apartamento
+          if (id === 'residencial') Store.state.sectores.forEach(sec => {
+            const d = sec.deptos || (sec.deptos = []);
+            const ej = d.length === 1 && d[0].area === 629 && d[0].grupo === 'Tablero TP';
+            if (d.length && !ej) return;
+            const casa = ej ? d[0] : Store.viviendaEjemplo();
+            Object.assign(casa, { grupo: 'Residencia 1', nombre: '1', area: 600 });
+            sec.deptos = [casa];
+          });
+          Store.save(); location.reload();
+        } }, C.TIPOS[id].n))),
       h('p', { class: 'hint' }, INFO[tipoActual][0]),
       h('h4', null, 'Factores que se aplican'),
       h('ul', { class: 'notes-list' }, INFO[tipoActual][1].map(t => h('li', null, t)))));

@@ -48,7 +48,7 @@
 
   const TIPOS = {
     apartamentos: { n: 'Apartamentos', viv: 'Apartamentos', sv: 'Servicios (áreas comunes)' },
-    residencial: { n: 'Residencial', viv: 'Casas', sv: 'Servicios (áreas comunes)' },
+    residencial: { n: 'Residencial', viv: 'Residencias', sv: 'Servicios (áreas comunes)' },
     comercial: { n: 'Locales comerciales', viv: null, sv: 'Locales comerciales' }
   };
   const tipoDe = P => TIPOS[P.tipoProyecto] || TIPOS.apartamentos;

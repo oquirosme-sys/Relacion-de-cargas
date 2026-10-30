@@ -71,6 +71,8 @@
     },
     save() { try { localStorage.setItem(KEY, JSON.stringify(this.state)); } catch (e) { /* ignorar */ } },
     ejemplo() { this.state = ejemplo(); this.save(); },
+    /** Vivienda de ejemplo (con las listas de dispositivos cargadas) para sembrar un nivel sin viviendas. */
+    viviendaEjemplo() { return ejemplo().sectores[0].deptos[0]; },
     sector() { const s = this.state; return s.sectores.find(x => x.id === s.activo) || s.sectores[0]; },
     exportar() { return JSON.stringify(this.state, null, 2); },
     importar(txt) {
