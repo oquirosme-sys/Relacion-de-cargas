@@ -46,12 +46,18 @@
     }).join(';')).join('\r\n');
   }
 
-  const PAGES = [
+  const TIPOS = {
+    apartamentos: { n: 'Apartamentos', viv: 'Apartamentos', sv: 'Servicios (áreas comunes)' },
+    residencial: { n: 'Residencial', viv: 'Casas', sv: 'Servicios (áreas comunes)' },
+    comercial: { n: 'Locales comerciales', viv: null, sv: 'Locales comerciales' }
+  };
+  const tipoDe = P => TIPOS[P.tipoProyecto] || TIPOS.apartamentos;
+  const pagesDe = P => [
     ['index.html', 'Proyecto y relación completa'],
-    ['departamentos.html', 'Departamentos'],
-    ['servicios.html', 'Servicios'],
+    tipoDe(P).viv ? ['departamentos.html', tipoDe(P).viv] : null,
+    ['servicios.html', tipoDe(P).sv],
     ['parametros.html', 'Parámetros NEC']
-  ];
+  ].filter(Boolean);
 
   /** Dibuja encabezado y pestañas; id = archivo actual. */
   function shell(id) {
@@ -73,7 +79,7 @@
       h('button', { class: 'btn small danger', onclick: () => { if (confirm('Se borrará el proyecto actual y se creará uno en blanco (un nivel / sector con una vivienda). Exporte antes si quiere conservarlo. ¿Continuar?')) { Store.ejemplo(); location.reload(); } } }, 'Proyecto en blanco'),
       inp));
     const nav = document.getElementById('tabs');
-    PAGES.forEach(p => nav.appendChild(h('a', { class: 'tab', href: p[0], 'aria-current': p[0] === id ? 'page' : null }, p[1])));
+    pagesDe(P).forEach(p => nav.appendChild(h('a', { class: 'tab', href: p[0], 'aria-current': p[0] === id ? 'page' : null }, p[1])));
   }
 
   /** Selector de sector compartido por Departamentos y Servicios. */
@@ -84,5 +90,5 @@
     return sel;
   }
 
-  g.C = { h, fmt, pct, toast, descargar, csv, shell, selectorSector, init(id, fn) { Store.load(); shell(id); fn(); } };
+  g.C = { h, fmt, pct, toast, descargar, csv, shell, selectorSector, TIPOS, tipoDe, init(id, fn) { Store.load(); shell(id); fn(); } };
 })(window);

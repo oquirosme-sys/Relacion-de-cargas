@@ -63,7 +63,8 @@
         ['fdEq', 'Equipos', '', '430.24 / 430.26'],
         ['fdEsp', 'Equipos especiales', '', 'placa de datos'],
         ['fdHvac', 'Fuerza (sistema de A/A)', '', art + '.60 / 430.26'],
-        ['fdElev', 'Elevadores (si no es automático)', '', '620.14']]],
+        ['fdElev', 'Elevadores (si no es automático)', '', '620.14'],
+        ['contLuz', 'Locales comerciales: alumbrado como carga continua (multiplicador)', '', '215.2 (125 %)']]],
       ['Referencia (no entra en los cálculos)', [
         ['cuartoElecM2', 'Espacio mínimo del cuarto eléctrico', 'm²', 'referencia de diseño'],
         ['cuartoTelM2', 'Espacio mínimo del cuarto de telecomunicaciones', 'm²', 'referencia de diseño']]],
@@ -92,6 +93,9 @@
     root.appendChild(h('h3', { class: 'sp' }, 'Tabla ' + art + '.84 · multifamiliar (método opcional)'));
     root.appendChild(tablaEscalones(P.tabla84, 'Hasta n.º de viviendas', '', true));
 
+    root.appendChild(h('h3', { class: 'sp' }, 'Coincidencia entre casas (tipo Residencial)'));
+    root.appendChild(tablaEscalones(P.tablaCoinc, 'Hasta n.º de casas', '', true));
+    root.appendChild(h('p', { class: 'hint' }, 'Valores de proyecto, no del NEC: 100 % = sin reducción. Use el criterio de la distribuidora.'));
     root.appendChild(h('h3', { class: 'sp' }, 'Tabla ' + art + '.44 · receptáculos no residenciales'));
     root.appendChild(tablaEscalones(P.tabla44, 'Hasta [VA]', '(vacío = resto)'));
     root.appendChild(h('h3', { class: 'sp' }, 'Tabla 620.14 · elevadores en un mismo alimentador'));

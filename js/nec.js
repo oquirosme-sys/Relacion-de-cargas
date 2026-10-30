@@ -77,7 +77,7 @@
   const PERFILES = {
     NEC2026: {
       etiqueta: 'NEC 2026 (NFPA 70-2026)', art: '120', refLight: '120.41',
-      lightVA: 22, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'opcional', art15Min: 0, cuartoElecM2: 5.8, cuartoTelM2: 5, metodoViv: 'estandar', art15Min: 1, cuartoElecM2: 5.8, cuartoTelM2: 5,
+      lightVA: 22, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'opcional', art15Min: 0, cuartoElecM2: 5.8, cuartoTelM2: 5, tipoProyecto: 'apartamentos', contLuz: 1.25, metodoViv: 'estandar', art15Min: 1, cuartoElecM2: 5.8, cuartoTelM2: 5, tipoProyecto: 'apartamentos', contLuz: 1.25,
       tier1: 8000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -85,7 +85,7 @@
     },
     NEC2020: {
       etiqueta: 'NEC 2020 (NFPA 70-2020, edición en español · Costa Rica)', art: '220', refLight: '220.12',
-      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'estandar', art15Min: 1, cuartoElecM2: 5.8, cuartoTelM2: 5,
+      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'estandar', art15Min: 1, cuartoElecM2: 5.8, cuartoTelM2: 5, tipoProyecto: 'apartamentos', contLuz: 1.25,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -93,7 +93,7 @@
     },
     NEC2023: {
       etiqueta: 'NEC 2023 (NFPA 70-2023)', art: '220', refLight: '220.12',
-      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'estandar', art15Min: 1, cuartoElecM2: 5.8, cuartoTelM2: 5,
+      lightVA: 33, sacN: 2, sacVA: 1500, lavVA: 1500, gfciVA: 0, cocinaVA: 8000, calentVA: 6000, recDwVAm2: 0, extDwVAm2: 0, telecomVA: 0, detectVA: 0, hvacDwVAm2: 0, manejPct: 0, divFD: 1, appl53Min: 4, metodoViv: 'estandar', art15Min: 1, cuartoElecM2: 5.8, cuartoTelM2: 5, tipoProyecto: 'apartamentos', contLuz: 1.25,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 240, fases: 1, protFactor: 1.25, minBreaker: 20,
@@ -101,7 +101,7 @@
     },
     LUAH: {
       etiqueta: 'LUAH · hoja de alimentadores de apartamentos (208 V, 3 fases)', art: '220', refLight: '220.12',
-      lightVA: 20, sacN: 1, sacVA: 3000, lavVA: 1500, gfciVA: 1000, cocinaVA: 0, calentVA: 0, recDwVAm2: 30, extDwVAm2: 5, telecomVA: 1500, detectVA: 1000, hvacDwVAm2: 80, manejPct: 10, divFD: 0.8, appl53Min: 4, metodoViv: 'luah', art15Min: 0, cuartoElecM2: 5.8, cuartoTelM2: 5,
+      lightVA: 20, sacN: 1, sacVA: 3000, lavVA: 1500, gfciVA: 1000, cocinaVA: 0, calentVA: 0, recDwVAm2: 30, extDwVAm2: 5, telecomVA: 1500, detectVA: 1000, hvacDwVAm2: 80, manejPct: 10, divFD: 0.8, appl53Min: 4, metodoViv: 'luah', art15Min: 0, cuartoElecM2: 5.8, cuartoTelM2: 5, tipoProyecto: 'apartamentos', contLuz: 1.25,
       tier1: 10000, restFD: 0.4, genFD: 1, hvacFD: 1, tablaIncluyeEquipos: false, applFD: 0.75,
       hvacAggFD: 1, hvacProjFD: 1, proyServSeparado: true,
       recVAm2: 1, svcFD: 1, fdLuz: 1, fdRec: 1, fdEq: 1, fdEsp: 1, fdHvac: 1, fdElev: 1, elevAuto: true, rec44: true, rec44Separado: false, fCoinc: 1, pf: 0.9, vUnit: 208, fases: 3, protFactor: 1.25, minBreaker: 20,
@@ -125,6 +125,7 @@
     p.breakers = (id === 'EXCEL' ? BRK_EXCEL : BRK_NEC).slice();
     p.trafos = TRAFOS_3F.slice();
     p.generadores = GENERADORES.slice();
+    p.tablaCoinc = [[1, 1], [5, 1], [10, 1], [20, 1], [50, 1], [9999, 1]].map(r => ({ hasta: r[0], fd: r[1] }));
     p.tabla44 = JSON.parse(JSON.stringify(TABLA_44));
     p.tabla620 = JSON.parse(JSON.stringify(TABLA_620));
     p.catalogo = JSON.parse(JSON.stringify(CATALOGO));
@@ -310,7 +311,8 @@
     const cats = [];
     const add = (k, n, ref, ciVA, cdVA, fd) => cats.push({ k, n, ref, ci: ciVA / 1000, cd: cdVA / 1000, fd: fd === undefined ? (ciVA ? cdVA / ciVA : 0) : fd });
     const art = P.art;
-    add('luz', 'Alumbrado', 'Tabla ' + art + '.12 / ' + art + '.42', T.luz, T.luz * fdv('fdLuz'), fdv('fdLuz'));
+    const com = P.tipoProyecto === 'comercial', kc = com ? P.contLuz : 1;
+    add('luz', 'Alumbrado', 'Tabla ' + art + '.12 / ' + art + '.42' + (com ? ' · carga continua' : ''), T.luz, T.luz * fdv('fdLuz') * kc, fdv('fdLuz') * kc);
     if (P.rec44 && P.rec44Separado) {
       add('ups', 'Contactos UPS', 'Tabla ' + art + '.44', T.ups, escalonada(T.ups, P.tabla44));
       add('rec', 'Contactos', 'Tabla ' + art + '.44', T.rec, escalonada(T.rec, P.tabla44));
@@ -331,19 +333,36 @@
   }
 
   /** Resumen de viviendas de un sector. Devuelve VA para gLC/gEq y kVA para el resto. */
+  /* Coincidencia entre casas (tipo Residencial): factor según el n.º de casas. Valores de proyecto, editables. */
+  function coincidencia(n, P) {
+    const t = (P.tablaCoinc || []).find(x => n <= x.hasta);
+    return t ? t.fd : 1;
+  }
   function resumenDeptos(sec, P) {
+    if (P.tipoProyecto === 'comercial') return Object.assign(armarDep(0, 0, 0, 0, 0, 0, P), { sGen: 0, sAC: 0 });
     if (sec.modo === 'resumen') {
       const lc = num(sec.resumen.depLC) * 1000, ac = num(sec.resumen.depAC) * 1000;
-      return armarDep(lc, 0, 0, 0, ac, 0, P);
+      const d = armarDep(lc, 0, 0, 0, ac, 0, P);
+      d.sGen = d.cdLC * 1000; d.sAC = d.cdAC * 1000;
+      return d;
     }
-    let gLC = 0, gEq = 0, gCoc = 0, nCoc = 0, ac = 0, n = 0;
+    let gLC = 0, gEq = 0, gCoc = 0, nCoc = 0, ac = 0, n = 0, sGen = 0, sAC = 0;
     sec.deptos.forEach(r => {
       if (r.incl === false) return;
       const c = calcDepto(r, P);
       gLC += c.gLC; gEq += c.gEq; ac += c.hvac; n++;
+      sGen += c.genDem * c.divFD; sAC += c.hvacDem * c.divFD;
       if (c.coc > 0) { gCoc += c.coc; nCoc++; }
     });
-    return armarDep(gLC, gEq, gCoc, nCoc, ac, n, P);
+    const d = armarDep(gLC, gEq, gCoc, nCoc, ac, n, P);
+    d.sGen = sGen; d.sAC = sAC;
+    if (P.tipoProyecto === 'residencial') {
+      // cada casa tiene su propio servicio: no se aplica la Tabla 220.42 al conjunto, sino la suma de la demanda de cada casa
+      const f = coincidencia(n, P);
+      d.cdLC = sGen / 1000 * f; d.cdAC = sAC / 1000 * f; d.cd = d.cdLC + d.cdAC;
+      d.kwCdLC = d.cdLC * P.pf; d.kwCdAC = d.cdAC * P.pf; d.kwCd = d.cd * P.pf;
+    }
+    return d;
   }
   /* Tabla 220.55 columna C (estufas hasta 12 kW): kW demandados según n.º de estufas; +5 % por cada kW sobre 12. */
   function demCocina(n, gCoc) {
@@ -383,7 +402,11 @@
     const depLC = S('ciLC');
     let cdLC, cdAC, ciLC, ciAC;
     ciLC = depLC + V('ciLC'); ciAC = depAC + V('ciAC');
-    if (P.proyServSeparado) {
+    if (P.tipoProyecto === 'residencial') {
+      const nCasas = Math.max(S('n'), S('sGen') > 0 ? 1 : 0), f = coincidencia(nCasas, P);
+      cdLC = S('sGen') / 1000 * f + V('cdLC');
+      cdAC = S('sAC') / 1000 * f + V('cdAC');
+    } else if (P.proyServSeparado) {
       cdLC = demLC(gLC, gEq, gCoc, nCoc, P) / 1000 + V('cdLC');
       cdAC = depAC * P.hvacProjFD + V('cdAC');
     } else {
@@ -408,8 +431,10 @@
     sectores.forEach(sec => {
       const dep = resumenDeptos(sec, P), sv = resumenServicios(sec, P);
       const add = (k, nombre, ref, ci, cd) => rows.push({ id: sec.id + '|' + k, sec: sec.nombre, nombre, ref, ci, cd });
-      add('viv-lc', 'Viviendas · alumbrado y contactos', 'Tabla ' + P.art + '.42', dep.ciLC, dep.cdLC);
-      add('viv-ac', 'Viviendas · A/A', P.art + '.60', dep.ciAC, dep.cdAC);
+      if (P.tipoProyecto !== 'comercial') {
+        add('viv-lc', 'Viviendas · alumbrado y contactos', 'Tabla ' + P.art + '.42', dep.ciLC, dep.cdLC);
+        add('viv-ac', 'Viviendas · A/A', P.art + '.60', dep.ciAC, dep.cdAC);
+      }
       if (sv.cats && sv.cats.length) sv.cats.forEach(c => add('sv-' + c.k, 'Servicios · ' + c.n, c.ref, c.ci, c.cd));
       else { add('sv-lc', 'Servicios · alumbrado, contactos y equipos', '', sv.ciLC, sv.cdLC); add('sv-ac', 'Servicios · A/A', '', sv.ciAC, sv.cdAC); }
     });
@@ -462,5 +487,5 @@
   }
 
   g.NEC = { PERFILES, nuevosParams, escalonada, siguiente, calcDepto, calcServicio, dispositivos, lineas, conductor, SISTEMAS, sistemaPorVF, nombreSistema, calcElevadores, resumenDeptos, resumenServicios,
-    resumenProyecto, transformador, multifamiliar, cargasGenerador, generador, selDefecto, GENERADORES, TABLA_42, TABLA_84, TABLA_44, TABLA_620, OCUP_NEC, BRK_NEC, BRK_EXCEL, TRAFOS_3F };
+    resumenProyecto, transformador, multifamiliar, coincidencia, cargasGenerador, generador, selDefecto, GENERADORES, TABLA_42, TABLA_84, TABLA_44, TABLA_620, OCUP_NEC, BRK_NEC, BRK_EXCEL, TRAFOS_3F };
 })(typeof window !== 'undefined' ? window : globalThis);

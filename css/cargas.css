@@ -82,3 +82,7 @@ table.freeze2 { --f1:150px; --f2:170px; }
 .topscroll + .tablewrap.big { border-top-left-radius:0; border-top-right-radius:0; }
 .dtitle { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
 .badge { background:var(--brand); color:var(--brand-ink); padding:.2rem .7rem; border-radius:999px; font-size:.85rem; font-weight:600; white-space:nowrap; }
+.tipos { display:flex; gap:.6rem; flex-wrap:wrap; margin:.4rem 0; }
+.tipo-btn { appearance:none; flex:1 1 180px; padding:.8rem 1rem; border:2px solid var(--line); border-radius:var(--radius); background:var(--surface); color:var(--ink); font:inherit; font-weight:600; cursor:pointer; }
+.tipo-btn:hover { border-color:var(--brand); }
+.tipo-btn.on { border-color:var(--brand); background:var(--brand); color:var(--brand-ink); }

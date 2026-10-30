@@ -83,7 +83,7 @@
       this.state.sectores.push(s); this.state.activo = s.id; this.save(); return s;
     },
     nuevaFilaDepto(grupo) { return { id: uid(), grupo: grupo || '', nombre: '', area: 0, dens: null, sac: null, lav: null, gfci: null, esp: 0, apar: 0, hvac: 0, incl: true }; },
-    nuevaFilaServicio(grupo) { return { id: uid(), grupo: grupo || '', nombre: '', area: 0, pct: 100, tipo: 'pasillos', dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true }; }
+    nuevaFilaServicio(grupo) { return { id: uid(), grupo: grupo || '', nombre: '', area: 0, pct: 100, tipo: this.state.params.tipoProyecto === 'comercial' ? 'tienda' : 'pasillos', dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true }; }
   };
   g.Store = Store;
 })(window);

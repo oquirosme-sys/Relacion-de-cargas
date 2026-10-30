@@ -13,6 +13,30 @@
     root.appendChild(h('div', { class: 'card form' }, campo('Nombre del proyecto', 'nombre'), campo('Ubicación', 'ubicacion'), campo('Fecha', 'fecha'), campo('Elaboró', 'responsable'),
       h('label', null, h('span', null, 'Edición del NEC'), h('div', { class: 'static' }, P.etiqueta, ' ', h('a', { href: 'parametros.html' }, 'cambiar'))) ));
 
+    // Tipo de proyecto: decide qué cargas hay y qué factores se aplican
+    const INFO = {
+      apartamentos: ['Edificio de apartamentos: cada apartamento con su alimentador y las áreas comunes como servicios.', [
+        'Alumbrado, contactos, lavandería y tomas: Tabla ' + art + '.42 aplicada al conjunto de apartamentos (3 kVA al 100 %, el resto al 35 %).',
+        'Cocinas: Tabla ' + art + '.55 según el número de cocinas. Aparatos fijos al 75 % con 4 o más (' + art + '.53). A/A al 100 %.',
+        'Disponible la alternativa multifamiliar ' + art + '.84 (más abajo).']],
+      residencial: ['Residencial: casas unifamiliares, cada una con su propio servicio (urbanización).', [
+        'Se calcula cada casa por su método (estándar u opcional) y se suman: no se aplica la Tabla ' + art + '.42 al conjunto de casas.',
+        'Coincidencia entre casas: tabla editable en Parámetros NEC (por defecto 1,00 = sin reducción; use el criterio de la distribuidora).',
+        'Mínimos del Art. 15 (CFIA): cocina 8 000 VA y calentador 6 000 VA. Servicios: áreas comunes (club, caseta, bombeo).']],
+      comercial: ['Locales comerciales: carga por área y densidad de carga (VA/m²), sin viviendas.', [
+        'Alumbrado: Tabla ' + art + '.12 y carga continua al 125 % (215.2), multiplicador editable en Parámetros NEC.',
+        'Contactos: Tabla ' + art + '.44 (10 kVA al 100 % y el resto al 50 %). Elevadores: Tabla 620.14. A/A al 100 %.',
+        'No se usan viviendas ni el método ' + art + '.84.']]
+    };
+    const tipoActual = INFO[P.tipoProyecto] ? P.tipoProyecto : 'apartamentos';
+    root.appendChild(h('div', { class: 'card' },
+      h('h3', null, 'Tipo de proyecto'),
+      h('div', { class: 'tipos' }, Object.keys(C.TIPOS).map(id => h('button', { class: 'tipo-btn' + (id === tipoActual ? ' on' : ''), 'aria-pressed': id === tipoActual ? 'true' : 'false',
+        onclick: () => { if (id === tipoActual) return; P.tipoProyecto = id; Store.save(); location.reload(); } }, C.TIPOS[id].n))),
+      h('p', { class: 'hint' }, INFO[tipoActual][0]),
+      h('h4', null, 'Factores que se aplican'),
+      h('ul', { class: 'notes-list' }, INFO[tipoActual][1].map(t => h('li', null, t)))));
+
     // Sistema eléctrico del proyecto: lo usan los alimentadores de viviendas y servicios
     const lblSis = h('b', null, NEC.nombreSistema(P.vUnit, P.fases));
     const actual = NEC.sistemaPorVF(P.vUnit, P.fases);
@@ -67,7 +91,8 @@
 
     root.appendChild(bloqueGenerador(S, P, art));
 
-    // Método opcional multifamiliar
+    // Método opcional multifamiliar (solo apartamentos)
+    if (tipoActual === 'apartamentos') {
     const M = NEC.multifamiliar(S.sectores, P);
     const chk = h('input', { type: 'checkbox', checked: !!P.aplica84, onchange: () => { P.aplica84 = chk.checked; Store.save(); render(); } });
     root.appendChild(h('div', { class: 'card' },
@@ -78,6 +103,7 @@
           ? h('p', { class: 'warn' }, 'Se necesitan al menos 3 viviendas capturadas en detalle (hay ' + M.n + ').')
           : h('p', null, M.n + ' viviendas · carga instalada ' + fmt(M.ciKva, 1) + ' kVA × factor ' + C.pct(M.fd) + ' = ', h('b', null, fmt(M.cd, 1) + ' kVA'), ' demandados (solo viviendas, sectores en detalle). Compare con el método estándar de arriba.'))
         : h('p', { class: 'hint' }, 'En el Excel original las viviendas no tienen cocina eléctrica, por lo que este método no aplica por defecto.')));
+    }
 
     // Imprimir / CSV
     root.appendChild(h('div', { class: 'toolbar no-print' },

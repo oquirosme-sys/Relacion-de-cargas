@@ -8,7 +8,12 @@
     root.textContent = '';
     const P = Store.state.params, sec = Store.sector(), art = P.art;
     root.appendChild(C.barraSector(render));
-    root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · viviendas'));
+    if (!C.tipoDe(P).viv) {
+      root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión'));
+      root.appendChild(h('div', { class: 'card' }, h('p', null, 'Este proyecto es de locales comerciales y no usa viviendas. Capture los locales en ', h('a', { href: 'servicios.html' }, 'Locales comerciales'), ' o cambie el tipo de proyecto en la ', h('a', { href: 'index.html' }, 'primera página'), '.')));
+      return;
+    }
+    root.appendChild(h('h2', null, 'Cargas preliminares de baja tensión · ' + C.tipoDe(P).viv.toLowerCase()));
     root.appendChild(h('p', { class: 'hint' }, 'Sistema del proyecto: ' + NEC.nombreSistema(P.vUnit, P.fases) + ' (se cambia en la página Proyecto; cada vivienda puede cambiarlo en su caja).'));
 
     if (sec.modo === 'resumen') return resumen(root, sec, P);
