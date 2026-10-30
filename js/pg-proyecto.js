@@ -36,17 +36,17 @@
           if (id === tipoActual) return;
           P.tipoProyecto = id;
           // Si todo es ejemplo sin tocar, la herramienta queda con un solo nivel / sector ("Nivel 1")
-          const St = Store.state, sinUsoSv = s => (s.servicios || []).every(r => !r.nombre || r.nombre === 'PASILLO DE SERVICIO' || r.nombre === 'ESCALERAS EMERGENCIA' || /^Local \d$/.test(r.nombre));
+          const St = Store.state, sinUsoSv = s => (s.servicios || []).every(r => !r.nombre || /^(PASILLO DE SERVICIO|ESCALERAS EMERGENCIA|Pasillos|Cuarto eléctrico|Cuarto mecánico|Local \d)$/.test(r.nombre));
           const sinUsoDp = s => (s.deptos || []).every(d => (d.area === 250 && d.nombre === 'Tipo A') || (d.area === 600 && d.grupo === 'Residencia 1'));
           if (St.sectores.length > 1 && St.sectores.every(s => sinUsoSv(s) && sinUsoDp(s))) {
             St.sectores = [St.sectores[0]]; St.sectores[0].nombre = 'Nivel 1'; St.activo = St.sectores[0].id;
           }
-          // Al pasar a locales comerciales, los niveles con solo las filas de ejemplo (o vacíos) reciben dos locales de 300 m²
-          if (id === 'comercial') Store.state.sectores.forEach(sec => {
-            const sinUso = (sec.servicios || []).every(r => !r.nombre || r.nombre === 'PASILLO DE SERVICIO' || r.nombre === 'ESCALERAS EMERGENCIA');
-            if (!sinUso) return;
-            sec.servicios = ['Local 1', 'Local 2'].map(n => Object.assign(Store.nuevaFilaServicio(sec.nombre), { nombre: n, area: 300, tipo: 'tienda' }));
-          });
+          // Los niveles con solo espacios de ejemplo (o vacíos) reciben los del tipo: pasillos y cuartos, más dos locales de 300 m² en comercial
+          Store.state.sectores.forEach(sec => { if (sinUsoSv(sec)) sec.servicios = Store.serviciosEjemplo(sec.nombre, id === 'comercial'); });
+          // Al volver a apartamentos, la residencia de ejemplo vuelve a ser el apartamento Tipo A de 250 m²
+          if (id === 'apartamentos') Store.state.sectores.forEach(sec => (sec.deptos || []).forEach(d => {
+            if (d.area === 600 && d.grupo === 'Residencia 1') Object.assign(d, { grupo: 'Apartamentos', nombre: 'Tipo A', area: 250 });
+          }));
           // Al pasar a residencial, el ejemplo (o un nivel sin viviendas) queda como una casa de 600 m² con las mismas cargas del apartamento
           if (id === 'residencial') Store.state.sectores.forEach(sec => {
             const d = sec.deptos || (sec.deptos = []);

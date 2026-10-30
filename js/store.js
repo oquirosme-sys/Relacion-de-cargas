@@ -6,6 +6,13 @@
   const KEY = 'cargas.proyecto.v5';
   const uid = () => 's' + Math.random().toString(36).slice(2, 9);
 
+  /** Espacios de servicio de ejemplo: pasillos, cuarto eléctrico y cuarto mecánico (más dos locales de 300 m² en comercial). */
+  function serviciosEjemplo(grupo, comercial) {
+    const sv = (nombre, area, tipo) => ({ id: uid(), grupo, nombre, area, pct: 100, tipo, dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true });
+    return (comercial ? [sv('Local 1', 300, 'tienda'), sv('Local 2', 300, 'tienda')] : [])
+      .concat([sv('Pasillos', 120, 'pasillos'), sv('Cuarto eléctrico', 25, 'cuarto_tec'), sv('Cuarto mecánico', 30, 'bombas')]);
+  }
+
   /** Proyecto en blanco: un sector, un apartamento "Tipo A" de 250 m² (hoja de alimentadores de aptos) y los espacios de servicios del ejemplo. */
   function ejemplo() {
     const L = ids => ids.map(id => ({ id, qty: 1, kva: null }));
@@ -14,12 +21,7 @@
     // Valores NEC 2020 (alumbrado, aparatos pequeños, lavandería) y mínimos del Art. 15: no se escriben, salen del perfil.
     const tipoA = { id: uid(), grupo: 'Apartamentos', nombre: 'Tipo A', area: 250, dens: null, recDw: null, extDw: null, sac: null, lav: null, gfci: null,
       telecom: null, detect: null, hvacDens: 80, manej: 10, hvac: 0, coc: null, cal: null, apar: null, esp: null, divFD: null, disp, disp53, incl: true };
-    const sv = (grupo, nombre, area, tipo) => ({ id: uid(), grupo, nombre, area, pct: 100, tipo, dLuz: null, dUps: null, dRec: null, dHvac: null, eq: 0, esp: 0, incl: true });
-    const servicios = [
-      sv('PLANTA BAJA', 'PASILLO DE SERVICIO', 135.48, 'pasillos'), sv('PLANTA BAJA', 'ESCALERAS EMERGENCIA', 13.26, 'escaleras'),
-      sv('PRIMER NIVEL', 'PASILLO DE SERVICIO', 27.16, 'pasillos'), sv('PRIMER NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras'),
-      sv('SEGUNDO NIVEL', 'PASILLO DE SERVICIO', 278.72, 'pasillos'), sv('SEGUNDO NIVEL', 'ESCALERAS EMERGENCIA', 25.3, 'escaleras')
-    ];
+    const servicios = serviciosEjemplo('Nivel 1', false);
     const A = { id: uid(), nombre: 'Nivel 1', modo: 'detalle', deptos: [tipoA], servicios, elevadores: [], fdServ: {}, resumen: { depLC: 0, depAC: 0, svLC: 0, svAC: 0, svFDlc: null, svFDac: null } };
     return {
       version: 1,
@@ -72,6 +74,7 @@
     save() { try { localStorage.setItem(KEY, JSON.stringify(this.state)); } catch (e) { /* ignorar */ } },
     ejemplo() { this.state = ejemplo(); this.save(); },
     /** Vivienda de ejemplo (con las listas de dispositivos cargadas) para sembrar un nivel sin viviendas. */
+    serviciosEjemplo,
     viviendaEjemplo() { return ejemplo().sectores[0].deptos[0]; },
     sector() { const s = this.state; return s.sectores.find(x => x.id === s.activo) || s.sectores[0]; },
     exportar() { return JSON.stringify(this.state, null, 2); },
